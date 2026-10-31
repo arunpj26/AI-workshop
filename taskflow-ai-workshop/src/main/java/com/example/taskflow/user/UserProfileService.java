@@ -23,6 +23,11 @@ public class UserProfileService {
         return new UserProfile(clean(name), clean(role), cleanImageUrl(imageUrl));
     }
 
+    public UserProfile profile(DemoProfile profile) {
+        if (profile == null) return new UserProfile(null, null, null);
+        return new UserProfile(clean(profile.name()), clean(profile.role()), cleanImageUrl(profile.imageUrl()));
+    }
+
     private static String clean(String value) {
         if (value == null) return null;
         String trimmed = value.trim();

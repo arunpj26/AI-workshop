@@ -17,11 +17,25 @@ class TaskControllerTest {
     @Autowired MockMvc mockMvc;
 
     @Test
-    void getTasksReturnsSeededTasks() throws Exception {
+    void getTasksReturnsSeededTasksWithSupportedFields() throws Exception {
         mockMvc.perform(get("/api/tasks"))
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith("application/json"))
             .andExpect(jsonPath("$", hasSize(5)))
+            .andExpect(jsonPath("$[0].id", is(1)))
+            .andExpect(jsonPath("$[0].title", is("Implement login")))
+            .andExpect(jsonPath("$[0].description", is("Add login form validation")))
+            .andExpect(jsonPath("$[0].status", is("IN_PROGRESS")))
             .andExpect(jsonPath("$[0].priority", is("HIGH")));
+    }
+
+    @Test
+    void getTasksIncludesEverySupportedKanbanStatus() throws Exception {
+        mockMvc.perform(get("/api/tasks"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[?(@.status == 'OPEN')]", hasSize(2)))
+            .andExpect(jsonPath("$[?(@.status == 'IN_PROGRESS')]", hasSize(2)))
+            .andExpect(jsonPath("$[?(@.status == 'COMPLETED')]", hasSize(1)))
+            .andExpect(jsonPath("$[?(@.status == 'ON_HOLD')]", hasSize(0)));
     }
 }

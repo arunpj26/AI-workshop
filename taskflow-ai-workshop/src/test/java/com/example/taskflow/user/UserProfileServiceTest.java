@@ -39,6 +39,25 @@ class UserProfileServiceTest {
         assertNull(missing.imageUrl());
     }
 
+    @Test
+    void demoProfileMissingValuesBecomeNullSafely() {
+        UserProfile profile = new UserProfileService("Default", "Member", null)
+            .profile(new DemoProfile("demo-missing", "  ", null, "javascript:alert(1)"));
+
+        assertNull(profile.name());
+        assertNull(profile.role());
+        assertNull(profile.imageUrl());
+    }
+
+    @Test
+    void nullDemoProfileBecomesNullSafely() {
+        UserProfile profile = new UserProfileService("Default", "Member", null).profile(null);
+
+        assertNull(profile.name());
+        assertNull(profile.role());
+        assertNull(profile.imageUrl());
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"http://example.com/a.png", "HTTPS://example.com/a.png", "/assets/a.png"})
     void allowsWebAndSameOriginImageUrls(String url) {

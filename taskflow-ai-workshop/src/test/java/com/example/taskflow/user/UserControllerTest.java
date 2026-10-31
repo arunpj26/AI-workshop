@@ -34,6 +34,30 @@ class UserControllerTest {
     }
 
     @Test
+    void getCurrentUserSupportsConfiguredDemoProfileSwitching() throws Exception {
+        mockMvc.perform(get("/api/users/current").param("profile", "demo-admin"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name", is("UVJ Administrator")))
+            .andExpect(jsonPath("$.role", is("Administrator")))
+            .andExpect(jsonPath("$.imageUrl", nullValue()));
+    }
+
+    @Test
+    void unknownDemoProfileReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/users/current").param("profile", "unknown"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getProfilesReturnsConfiguredDemoAccounts() throws Exception {
+        mockMvc.perform(get("/api/users/profiles"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()", is(2)))
+            .andExpect(jsonPath("$[0].id", is("demo-user")))
+            .andExpect(jsonPath("$[1].id", is("demo-admin")));
+    }
+
+    @Test
     void existingTasksEndpointIsUnchanged() throws Exception {
         mockMvc.perform(get("/api/tasks"))
             .andExpect(status().isOk())
