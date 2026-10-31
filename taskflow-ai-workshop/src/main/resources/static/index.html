@@ -1,12 +1,191 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TaskFlow | Workshop Starter</title><link rel="stylesheet" href="/styles.css">
-</head><body><main class="container">
-<header><p class="eyebrow">AI-ASSISTED ENGINEERING WORKSHOP</p><h1>TaskFlow</h1>
-<p class="subtitle">A task list for practising the software development lifecycle with GitHub Copilot.</p></header>
-<section class="panel"><div class="panel-heading"><h2>Tasks</h2><button id="reload" type="button">Refresh</button></div>
-<p id="status" role="status">Loading tasks…</p><div class="table-wrap"><table>
-<thead><tr><th>Task</th><th>Description</th><th>Status</th><th>Priority</th></tr></thead><tbody id="tasks"></tbody>
-</table></div></section><footer>Sample data only · The priority filter is the Session 5 feature.</footer>
-</main><script src="/app.js"></script></body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UVJTaskFlow</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="brand-block">
+          <img class="brand-logo" src="/assets/uvj-logo.png" alt="UVJ Technologies logo">
+          <div class="brand-copy">
+            <div class="brand-title">UVJTaskFlow</div>
+            <div class="brand-subtitle">Plan · Track · Deliver</div>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Sidebar">
+          <button class="nav-item active" type="button">
+            <span class="nav-icon">⌂</span>
+            <span>Dashboard</span>
+          </button>
+          <button class="nav-item" type="button">
+            <span class="nav-icon">☰</span>
+            <span>Tasks</span>
+          </button>
+          <button class="nav-item" type="button">
+            <span class="nav-icon">◫</span>
+            <span>My Tasks</span>
+          </button>
+          <button class="nav-item" type="button">
+            <span class="nav-icon">▣</span>
+            <span>Board</span>
+          </button>
+          <button class="nav-item" type="button">
+            <span class="nav-icon">◔</span>
+            <span>Timeline</span>
+          </button>
+          <button class="nav-item" type="button">
+            <span class="nav-icon">▤</span>
+            <span>Reports</span>
+          </button>
+          <button class="nav-item" type="button">
+            <span class="nav-icon">▥</span>
+            <span>Milestones</span>
+          </button>
+          <button class="nav-item" type="button">
+            <span class="nav-icon">◍</span>
+            <span>Team</span>
+          </button>
+          <button class="nav-item" type="button">
+            <span class="nav-icon">⚙</span>
+            <span>Settings</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="footer-logo" aria-hidden="true">⌁</div>
+          <span>Powered by<br>UVJ Technologies</span>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <h1 class="sr-only">TaskFlow</h1>
+        <div class="sr-only">
+          <table>
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Priority</th>
+              </tr>
+            </thead>
+            <tbody id="tasks"></tbody>
+          </table>
+        </div>
+        <header class="topbar" aria-label="Top navigation">
+          <label class="search-box" aria-label="Search tasks">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input type="search" placeholder="Search tasks, people, or keywords..." aria-label="Search tasks, people, or keywords">
+          </label>
+
+          <div class="profile-summary" aria-label="Current user profile">
+            <div class="notification-pill" aria-label="Notifications">3</div>
+            <div class="avatar" id="user-avatar" aria-label="User avatar">A</div>
+            <div class="profile-meta">
+              <div class="profile-name" id="user-name">Loading...</div>
+              <div class="profile-role" id="user-role">Project Lead</div>
+            </div>
+            <button class="profile-caret" type="button" aria-label="Open account menu">▾</button>
+          </div>
+        </header>
+
+        <section class="hero-panel" aria-label="Overview metrics">
+          <div class="hero-copy">
+            <p>Welcome back,</p>
+            <h1 id="welcome-name">TaskFlow</h1>
+          </div>
+
+          <div class="stats-grid" aria-label="Task statistics">
+            <article class="stat-card stat-total">
+              <div class="stat-icon">▤</div>
+              <div class="stat-value" id="total-tasks">0</div>
+              <div class="stat-label">Total Tasks</div>
+            </article>
+            <article class="stat-card stat-completed">
+              <div class="stat-icon">✓</div>
+              <div class="stat-value" id="completed-tasks">0</div>
+              <div class="stat-label">Completed</div>
+            </article>
+            <article class="stat-card stat-progress">
+              <div class="stat-icon">◔</div>
+              <div class="stat-value" id="in-progress-tasks">0</div>
+              <div class="stat-label">In Progress</div>
+            </article>
+            <article class="stat-card stat-todo">
+              <div class="stat-icon">☰</div>
+              <div class="stat-value" id="todo-tasks">0</div>
+              <div class="stat-label">To Do</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="board-panel">
+          <div class="board-header">
+            <div class="board-title-block">
+              <h2>Task Board</h2>
+              <p>Manage and track your work across different stages</p>
+            </div>
+
+            <div class="board-actions">
+              <button class="action-button secondary" type="button">All Projects</button>
+              <div class="date-pill">Oct 25, 2026 - Nov 01, 2026</div>
+              <button id="reload" class="action-button primary" type="button">Refresh</button>
+              <button class="action-button primary" type="button">+ Create Task</button>
+            </div>
+          </div>
+
+          <div class="board-toolbar" aria-label="Task filters">
+            <div class="toolbar-left">
+              <button class="board-tab active" type="button">▣ Board</button>
+              <button class="board-tab" type="button">☰ List</button>
+              <button class="board-tab" type="button">◫ Calendar</button>
+              <button class="board-tab" type="button">▤ Analytics</button>
+            </div>
+
+            <div class="toolbar-right">
+              <label class="mini-field" for="priority-filter">
+                <span>Priority:</span>
+                <select id="priority-filter" aria-label="Filter tasks by priority">
+                  <option value="">All</option>
+                  <option value="LOW">LOW</option>
+                  <option value="MEDIUM">MEDIUM</option>
+                  <option value="HIGH">HIGH</option>
+                </select>
+              </label>
+              <label class="mini-field" for="status-filter">
+                <span>Status:</span>
+                <select id="status-filter" aria-label="Filter tasks by status">
+                  <option value="ALL">All</option>
+                  <option value="OPEN">To Do</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="ON_HOLD">On Hold</option>
+                </select>
+              </label>
+              <label class="mini-field" for="assignee-filter">
+                <span>Assignee:</span>
+                <select id="assignee-filter" aria-label="Filter tasks by assignee">
+                  <option value="ALL">All</option>
+                  <option value="Demo User">Demo User</option>
+                  <option value="Arun Janardhanan">Arun Janardhanan</option>
+                </select>
+              </label>
+              <button id="apply-filter" type="button" class="action-button clear-button">Apply filter</button>
+              <button id="clear-filter" type="button" class="action-button secondary clear-button">Clear</button>
+            </div>
+          </div>
+
+          <p id="status" class="status-text" role="status">Loading tasks…</p>
+          <div id="kanban-board" class="kanban-board" aria-live="polite"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

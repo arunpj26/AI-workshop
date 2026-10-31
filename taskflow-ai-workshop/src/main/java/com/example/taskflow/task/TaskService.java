@@ -12,5 +12,19 @@ public class TaskService {
         new Task(4, "Add API documentation", "Document task endpoints", "OPEN", "MEDIUM"),
         new Task(5, "Improve error handling", "Return consistent API errors", "IN_PROGRESS", "HIGH")
     );
-    public List<Task> findAll() { return tasks; }
+
+    public List<Task> findAll() {
+        return tasks;
+    }
+
+    public List<Task> findAll(String priority) {
+        if (priority == null) {
+            return tasks;
+        }
+
+        TaskPriority taskPriority = TaskPriority.fromValue(priority);
+        return tasks.stream()
+            .filter(task -> task.priority() != null && task.priority().equalsIgnoreCase(taskPriority.name()))
+            .toList();
+    }
 }
