@@ -1,12 +1,79 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TaskFlow | Workshop Starter</title><link rel="stylesheet" href="/styles.css">
-</head><body><main class="container">
-<header><p class="eyebrow">AI-ASSISTED ENGINEERING WORKSHOP</p><h1>TaskFlow</h1>
-<p class="subtitle">A task list for practising the software development lifecycle with GitHub Copilot.</p></header>
-<section class="panel"><div class="panel-heading"><h2>Tasks</h2><button id="reload" type="button">Refresh</button></div>
-<p id="status" role="status">Loading tasks…</p><div class="table-wrap"><table>
-<thead><tr><th>Task</th><th>Description</th><th>Status</th><th>Priority</th></tr></thead><tbody id="tasks"></tbody>
-</table></div></section><footer>Sample data only · The priority filter is the Session 5 feature.</footer>
-</main><script src="/app.js"></script></body></html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>UVJTaskFlow | Work in flow</title>
+	<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+	<div class="app-shell">
+		<aside class="sidebar" aria-label="Primary navigation">
+			<a class="brand" href="/" aria-label="UVJTaskFlow home">
+				<img src="/images/uvj-logo.png" alt="UVJ Technologies">
+				<span><strong>UVJ<span>TaskFlow</span></strong><small>Plan · Track · Deliver</small></span>
+			</a>
+			<nav class="main-nav">
+				<a class="nav-link active" href="#dashboard" aria-current="page"><span aria-hidden="true">⌂</span>Dashboard</a>
+				<a class="nav-link" href="#tasks"><span aria-hidden="true">▣</span>Tasks</a>
+				<a class="nav-link" href="#my-tasks"><span aria-hidden="true">♙</span>My Tasks</a>
+				<a class="nav-link" href="#board"><span aria-hidden="true">▥</span>Board</a>
+				<a class="nav-link" href="#timeline"><span aria-hidden="true">⌁</span>Timeline</a>
+				<a class="nav-link" href="#reports"><span aria-hidden="true">▥</span>Reports</a>
+			</nav>
+			<div class="sidebar-footer">
+				<p>Powered by</p>
+				<strong>UVJ Technologies</strong>
+			</div>
+		</aside>
+
+		<main class="main-content" id="dashboard">
+			<header class="topbar">
+				<div class="search-shell">
+					<span aria-hidden="true">⌕</span>
+					<label class="visually-hidden" for="task-search">Search tasks</label>
+					<input id="task-search" type="search" placeholder="Search tasks, people, or keywords...">
+				</div>
+				<div class="topbar-actions">
+					<button class="icon-button" type="button" aria-label="Notifications"><span aria-hidden="true">♧</span><i>3</i></button>
+					<div class="profile" id="profile" aria-live="polite">
+						<div class="avatar avatar-fallback" aria-hidden="true">?</div>
+						<div><strong id="profile-name">Loading profile</strong><span id="profile-role">Please wait</span></div>
+					</div>
+				</div>
+			</header>
+
+			<section class="welcome-panel" aria-labelledby="welcome-heading">
+				<div>
+					<p class="eyebrow">YOUR WORKSPACE</p>
+					<h1 id="welcome-heading">Welcome back, <span id="welcome-name">there</span>.</h1>
+					<p>Your work, clearly in flow.</p>
+				</div>
+				<div class="summary-grid" aria-label="Task summary">
+					<article class="summary-card total"><span class="summary-icon" aria-hidden="true">▱</span><div><strong id="total-count">0</strong><span>Total tasks</span></div></article>
+					<article class="summary-card completed"><span class="summary-icon" aria-hidden="true">✓</span><div><strong id="completed-count">0</strong><span>Completed</span></div></article>
+					<article class="summary-card progress"><span class="summary-icon" aria-hidden="true">◷</span><div><strong id="progress-count">0</strong><span>In progress</span></div></article>
+					<article class="summary-card todo"><span class="summary-icon" aria-hidden="true">≡</span><div><strong id="todo-count">0</strong><span>To do</span></div></article>
+				</div>
+			</section>
+
+			<section class="board-section" id="board" aria-labelledby="board-heading">
+				<div class="section-heading">
+					<div><h2 id="board-heading">Task board</h2><p>Manage and track your work across different stages</p></div>
+					<button class="refresh-button" id="reload" type="button"><span aria-hidden="true">↻</span>Refresh</button>
+				</div>
+				<p id="status" class="status-message" role="status" aria-live="polite">Loading tasks...</p>
+				<div class="board" id="task-board" aria-label="Tasks by status">
+					<section class="board-column todo-column" data-column="todo" aria-labelledby="todo-heading"><header><span class="column-dot"></span><h3 id="todo-heading">To do</h3><span class="column-count" id="todo-column-count">0</span></header><div class="task-list" id="todo-tasks"></div></section>
+					<section class="board-column progress-column" data-column="in-progress" aria-labelledby="progress-heading"><header><span class="column-dot"></span><h3 id="progress-heading">In progress</h3><span class="column-count" id="progress-column-count">0</span></header><div class="task-list" id="progress-tasks"></div></section>
+					<section class="board-column completed-column" data-column="completed" aria-labelledby="completed-heading"><header><span class="column-dot"></span><h3 id="completed-heading">Completed</h3><span class="column-count" id="completed-column-count">0</span></header><div class="task-list" id="completed-tasks"></div></section>
+					<section class="board-column hold-column" data-column="on-hold" aria-labelledby="hold-heading"><header><span class="column-dot"></span><h3 id="hold-heading">On hold</h3><span class="column-count" id="hold-column-count">0</span></header><div class="task-list" id="hold-tasks"></div></section>
+				</div>
+			</section>
+
+			<footer><span>UVJ Technologies</span><span>UVJTaskFlow</span><span>Keep work moving forward.</span></footer>
+		</main>
+	</div>
+	<script src="/app.js"></script>
+</body>
+</html>

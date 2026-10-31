@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -23,8 +22,8 @@ class UserControllerConfiguredUserTest {
     void getCurrentUserReturnsOverriddenProfile() throws Exception {
         mockMvc.perform(get("/api/users/current"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name", is("Test User")))
-            .andExpect(jsonPath("$.role", is("Administrator")))
-            .andExpect(jsonPath("$.imageUrl", is("https://example.com/test-user.png")));
+            .andExpect(jsonPath("$.name").value("Test User"))
+            .andExpect(jsonPath("$.role").value("Administrator"))
+            .andExpect(jsonPath("$.imageUrl").value("https://example.com/test-user.png"));
     }
 }

@@ -5,7 +5,7 @@ Show attendees a visible, controlled AI-assisted engineering lifecycle: run the 
 
 ## Before the session
 - Open the repository root in VS Code.
-- Confirm Git, Java 21, Maven (or the project Maven wrapper), VS Code, and GitHub Copilot are available.
+- Confirm Git, Java 25, Maven (or the project Maven wrapper), VS Code, and GitHub Copilot are available.
 - Confirm the app builds and can start.
 - Confirm the custom agents and prompt files are discovered by the installed Copilot version.
 - Confirm the Jira MCP connection is authenticated and attendees have permission to read the training issue `AIW-5`.

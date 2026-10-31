@@ -19,7 +19,7 @@ Prepare and run the existing TaskFlow application locally so the user can inspec
 
 ## Procedure
 0. Check prerequisites and set up workshop dependencies:
-   - Run `java -version` (Java 21 expected per `pom.xml`/CI), `node --version` (Node 20+), and `npm --version`. Maven is not required when the wrapper (`mvnw`/`mvnw.cmd`) exists. Report any missing tool and stop.
+   - Run `java -version` (Java 25 expected per `pom.xml`/CI), `node --version` (Node 20+), and `npm --version`. Maven is not required when the wrapper (`mvnw`/`mvnw.cmd`) exists. Report any missing tool and stop.
    - If `node_modules/` is missing or `node_modules/@playwright/test` does not exist, run `npm install` in the repository root.
    - Run `npx playwright install chromium`. It is quick when the browser is already installed. On Linux CI-like machines that report missing system libraries, tell the user to run `npx playwright install --with-deps chromium` themselves because it may need elevated rights.
    - Confirm both commands succeeded from their output before continuing. If they fail (for example, no internet or a proxy), report the exact error and continue with the app start, noting that E2E tests will not be runnable.
