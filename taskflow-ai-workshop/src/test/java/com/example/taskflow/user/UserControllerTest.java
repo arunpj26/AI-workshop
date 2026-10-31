@@ -34,12 +34,24 @@ class UserControllerTest {
     }
 
     @Test
-    void existingTasksEndpointIsUnchanged() throws Exception {
+    void existingTasksEndpointReturnsTasksWithNewFields() throws Exception {
         mockMvc.perform(get("/api/tasks"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()", is(5)))
             .andExpect(jsonPath("$[0].title", is("Implement login")))
             .andExpect(jsonPath("$[0].status", is("IN_PROGRESS")))
-            .andExpect(jsonPath("$[0].priority", is("HIGH")));
+            .andExpect(jsonPath("$[0].priority", is("HIGH")))
+            .andExpect(jsonPath("$[0].assignee", is("Alice")))
+            .andExpect(jsonPath("$[0].effort", is(5)))
+            .andExpect(jsonPath("$[0].comments", is(2)));
+    }
+
+    @Test
+    void currentUserEndpointReturnsValidProfileStructure() throws Exception {
+        mockMvc.perform(get("/api/users/current"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isMap())
+            .andExpect(jsonPath("$.name").isNotEmpty())
+            .andExpect(jsonPath("$.role").isNotEmpty());
     }
 }
