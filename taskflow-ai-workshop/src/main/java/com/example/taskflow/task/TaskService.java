@@ -12,5 +12,25 @@ public class TaskService {
         new Task(4, "Add API documentation", "Document task endpoints", "OPEN", "MEDIUM"),
         new Task(5, "Improve error handling", "Return consistent API errors", "IN_PROGRESS", "HIGH")
     );
+
     public List<Task> findAll() { return tasks; }
+
+    public List<Task> findAll(String priority) {
+        if (priority == null) {
+            return tasks;
+        }
+
+        String normalizedPriority = priority.trim();
+        if (normalizedPriority.isEmpty()) {
+            throw new IllegalArgumentException("priority must be one of LOW, MEDIUM, HIGH");
+        }
+
+        return switch (normalizedPriority) {
+            case "LOW" -> tasks.stream().filter(task -> "LOW".equals(task.priority())).toList();
+            case "MEDIUM" -> tasks.stream().filter(task -> "MEDIUM".equals(task.priority())).toList();
+            case "HIGH" -> tasks.stream().filter(task -> "HIGH".equals(task.priority())).toList();
+            default -> throw new IllegalArgumentException(
+                "Unsupported priority '%s'. Supported values: LOW, MEDIUM, HIGH.".formatted(normalizedPriority));
+        };
+    }
 }

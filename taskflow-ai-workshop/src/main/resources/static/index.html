@@ -1,12 +1,161 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TaskFlow | Workshop Starter</title><link rel="stylesheet" href="/styles.css">
-</head><body><main class="container">
-<header><p class="eyebrow">AI-ASSISTED ENGINEERING WORKSHOP</p><h1>TaskFlow</h1>
-<p class="subtitle">A task list for practising the software development lifecycle with GitHub Copilot.</p></header>
-<section class="panel"><div class="panel-heading"><h2>Tasks</h2><button id="reload" type="button">Refresh</button></div>
-<p id="status" role="status">Loading tasks…</p><div class="table-wrap"><table>
-<thead><tr><th>Task</th><th>Description</th><th>Status</th><th>Priority</th></tr></thead><tbody id="tasks"></tbody>
-</table></div></section><footer>Sample data only · The priority filter is the Session 5 feature.</footer>
-</main><script src="/app.js"></script></body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UVJTaskFlow | Dashboard</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Sidebar navigation">
+        <div class="brand">
+          <img src="/images/uvj-logo.svg" alt="UVJ Technologies logo" class="brand-logo">
+          <div class="brand-copy">
+            <span class="brand-kicker">UVJ Technologies</span>
+            <h1>UVJTaskFlow</h1>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Primary navigation">
+          <button class="nav-item active" type="button">Dashboard</button>
+          <button class="nav-item" type="button">Tasks</button>
+          <button class="nav-item" type="button">My Tasks</button>
+          <button class="nav-item" type="button">Board</button>
+          <button class="nav-item" type="button">Timeline</button>
+          <button class="nav-item" type="button">Reports</button>
+          <button class="nav-item" type="button">Milestones</button>
+          <button class="nav-item" type="button">Team</button>
+          <button class="nav-item" type="button">Settings</button>
+        </nav>
+      </aside>
+
+      <div class="main-panel">
+        <header class="topbar">
+          <label class="search-field" for="global-search">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input id="global-search" type="search" placeholder="Search tasks..." aria-label="Search tasks">
+          </label>
+
+          <div class="profile-pill" aria-live="polite">
+            <div class="profile-copy">
+              <span class="welcome-label">Welcome back</span>
+              <strong id="user-name">Loading…</strong>
+              <span id="user-role" class="user-role">Loading…</span>
+            </div>
+            <div id="user-avatar" class="user-avatar" aria-label="Current user avatar">--</div>
+          </div>
+        </header>
+
+        <main class="dashboard-content">
+          <section class="page-intro" aria-label="Task summary header">
+            <div>
+              <p class="eyebrow">Overview</p>
+              <h2>Performance dashboard</h2>
+            </div>
+            <div class="summary-badge" id="page-status" role="status">Loading data…</div>
+          </section>
+
+          <section class="summary-grid" aria-label="Task summary cards">
+            <article class="summary-card total">
+              <div class="card-header">
+                <span>Total Tasks</span>
+                <span class="metric-trend">All</span>
+              </div>
+              <strong id="total-tasks">0</strong>
+            </article>
+            <article class="summary-card completed">
+              <div class="card-header">
+                <span>Completed</span>
+                <span class="metric-trend">Done</span>
+              </div>
+              <strong id="completed-tasks">0</strong>
+            </article>
+            <article class="summary-card progress">
+              <div class="card-header">
+                <span>In Progress</span>
+                <span class="metric-trend">Active</span>
+              </div>
+              <strong id="in-progress-tasks">0</strong>
+            </article>
+            <article class="summary-card todo">
+              <div class="card-header">
+                <span>To Do</span>
+                <span class="metric-trend">Queued</span>
+              </div>
+              <strong id="todo-tasks">0</strong>
+            </article>
+          </section>
+
+          <section class="board-controls" aria-label="Task filters">
+            <div class="filter-group">
+              <label class="filter-field">
+                <span>Priority</span>
+                <select id="priority-filter">
+                  <option value="all">All priorities</option>
+                  <option value="HIGH">High</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="LOW">Low</option>
+                </select>
+              </label>
+
+              <label class="filter-field">
+                <span>Status</span>
+                <select id="status-filter">
+                  <option value="all">All statuses</option>
+                  <option value="To Do">To Do</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                  <option value="On Hold">On Hold</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="actions-group">
+              <button id="refresh-data" class="secondary-button" type="button">Refresh</button>
+              <button id="clear-filters" class="secondary-button" type="button">Clear filters</button>
+            </div>
+          </section>
+
+          <section class="board" aria-label="Kanban board">
+            <div class="board-column" data-column="To Do">
+              <header>
+                <h3>To Do</h3>
+                <span class="column-count" id="count-todo">0</span>
+              </header>
+              <div id="tasks-todo" class="task-list" aria-live="polite"></div>
+            </div>
+
+            <div class="board-column" data-column="In Progress">
+              <header>
+                <h3>In Progress</h3>
+                <span class="column-count" id="count-in-progress">0</span>
+              </header>
+              <div id="tasks-in-progress" class="task-list" aria-live="polite"></div>
+            </div>
+
+            <div class="board-column" data-column="Completed">
+              <header>
+                <h3>Completed</h3>
+                <span class="column-count" id="count-completed">0</span>
+              </header>
+              <div id="tasks-completed" class="task-list" aria-live="polite"></div>
+            </div>
+
+            <div class="board-column" data-column="On Hold">
+              <header>
+                <h3>On Hold</h3>
+                <span class="column-count" id="count-on-hold">0</span>
+              </header>
+              <div id="tasks-on-hold" class="task-list" aria-live="polite"></div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <footer class="site-footer">© 2026 UVJ Technologies • Task visibility for modern teams</footer>
+    <script src="/app.js"></script>
+  </body>
+</html>
+
