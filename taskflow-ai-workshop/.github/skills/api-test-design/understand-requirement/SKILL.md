@@ -1,7 +1,7 @@
 ---
 name: understand-requirement
-agent: agent
 description: Analyse a story and produce testable acceptance criteria before implementation.
+disable-model-invocation: true
 ---
 Analyse the supplied feature request. If the user identifies a Jira issue and approved Atlassian MCP is connected, retrieve that issue; otherwise use supplied text or ask for the issue key.
 

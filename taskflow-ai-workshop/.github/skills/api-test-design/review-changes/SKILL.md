@@ -1,7 +1,7 @@
 ---
 name: review-changes
-agent: agent
-description: Review the current diff against requirements, correctness, security, and test evidence.
+description: "Review the current diff against requirements, correctness, security, and test evidence."
+disable-model-invocation: true
 ---
 Review the current Git diff against the approved story and acceptance criteria. Do not edit files automatically.
 

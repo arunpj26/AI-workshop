@@ -1,9 +1,8 @@
 ---
 name: jira-connect
-description: Verify the Atlassian MCP (Jira) connection at the start of a chat session, read-only, before running any Jira-based agent.
-agent: agent
+description: "Verify the Atlassian MCP (Jira) connection at the start of a chat session, read-only, before running any Jira-based agent."
+disable-model-invocation: true
 ---
-
 # Verify Jira connection (Atlassian MCP)
 
 Run this first in every new chat session, before selecting a Jira-based agent such as `task-planner` or `jira-to-pr`.

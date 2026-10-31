@@ -1,6 +1,6 @@
 ---
 name: html-review-checklist
-description: Simple reusable checklist for reviewing HTML structure, semantics, accessibility, IDs, headings, deprecated attributes, and maintainability.
+description: 'Use for simple, reusable HTML reviews covering structure, semantics, accessibility, IDs, headings, deprecated attributes, and maintainability.'
 ---
 # HTML review checklist
 
