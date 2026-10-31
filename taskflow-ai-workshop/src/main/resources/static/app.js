@@ -54,30 +54,38 @@ function getSummaryCounts(tasks) {
 }
 
 function updateUserProfile(profile) {
-  const name = normalizeText(profile?.name, "there");
-  const role = normalizeText(profile?.role, "Project Member");
+  const name = normalizeText(profile?.name);
+  const role = normalizeText(profile?.role);
   const avatar = document.querySelector("#user-avatar");
   const nameNode = document.querySelector("#user-name");
   const roleNode = document.querySelector("#user-role");
+  const welcomeHeading = document.querySelector("#welcome-heading");
 
-  nameNode.textContent = name;
+  nameNode.textContent = name || "Current user";
   roleNode.textContent = role;
-  avatar.setAttribute("aria-label", `${name} profile`);
+  roleNode.hidden = !role;
+  welcomeHeading.textContent = name ? `Welcome back, ${name}` : "Welcome to UVJTaskFlow";
+  avatar.setAttribute("aria-label", name ? `${name} profile image` : "Current user profile image");
   avatar.replaceChildren();
 
-  if (profile?.imageUrl) {
+  const showInitials = () => {
+    const initials = document.createElement("span");
+    initials.textContent = name ? getInitials(name) : "UV";
+    initials.setAttribute("aria-hidden", "true");
+    avatar.replaceChildren(initials);
+  };
+
+  if (normalizeText(profile?.imageUrl)) {
     const image = document.createElement("img");
     image.src = profile.imageUrl;
-    image.alt = `${name} profile image`;
+    image.alt = "";
     image.referrerPolicy = "no-referrer";
+    image.addEventListener("error", showInitials, { once: true });
     avatar.appendChild(image);
     return;
   }
 
-  const initials = document.createElement("span");
-  initials.textContent = getInitials(name);
-  initials.setAttribute("aria-hidden", "true");
-  avatar.appendChild(initials);
+  showInitials();
 }
 
 function renderSummary(tasks) {
@@ -145,6 +153,10 @@ function createTaskCard(task) {
 }
 
 function renderBoard(tasks) {
+  const boardMessage = document.querySelector("#board-message");
+  boardMessage.hidden = true;
+  boardMessage.textContent = "";
+
   for (const columnName of Object.keys(columnMap)) {
     const list = document.querySelector(`#${columnMap[columnName]}`);
     list.replaceChildren();
@@ -158,6 +170,14 @@ function renderBoard(tasks) {
     const matchesStatus = state.filters.status === "all" || taskStatus === state.filters.status;
     return matchesSearch && matchesPriority && matchesStatus;
   });
+
+  if (!tasks.length) {
+    boardMessage.textContent = "No tasks are available yet.";
+    boardMessage.hidden = false;
+  } else if (!visibleTasks.length) {
+    boardMessage.textContent = "No tasks match the current search and filters.";
+    boardMessage.hidden = false;
+  }
 
   const grouped = {
     "To Do": [],
@@ -177,7 +197,7 @@ function renderBoard(tasks) {
     if (!grouped[columnName].length) {
       const empty = document.createElement("p");
       empty.className = "empty-state";
-      empty.textContent = "No tasks match this lane.";
+      empty.textContent = "No tasks in this lane.";
       container.appendChild(empty);
       continue;
     }
@@ -190,29 +210,51 @@ function renderBoard(tasks) {
 
 async function loadData() {
   const pageStatus = document.querySelector("#page-status");
-  pageStatus.textContent = "Loading data…";
+  const boardMessage = document.querySelector("#board-message");
+  const refreshButton = document.querySelector("#refresh-data");
+  pageStatus.classList.remove("status-error");
+  pageStatus.textContent = "Loading dashboard…";
+  refreshButton.disabled = true;
 
-  try {
-    const [profile, tasks] = await Promise.all([
-      fetch("/api/users/current").then((response) => {
-        if (!response.ok) throw new Error(`Profile request failed (${response.status})`);
-        return response.json();
-      }),
-      fetch("/api/tasks").then((response) => {
-        if (!response.ok) throw new Error(`Tasks request failed (${response.status})`);
-        return response.json();
-      })
-    ]);
+  const requestJson = async (url, label) => {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`${label} request failed (${response.status})`);
+    return response.json();
+  };
 
-    state.user = profile;
-    state.tasks = tasks;
-    updateUserProfile(profile);
-    renderSummary(tasks);
-    renderBoard(tasks);
-    pageStatus.textContent = `${tasks.length} tasks loaded`;
-  } catch (error) {
-    pageStatus.textContent = `Unable to load dashboard: ${error.message}`;
+  const [profileResult, tasksResult] = await Promise.allSettled([
+    requestJson("/api/users/current", "Profile"),
+    requestJson("/api/tasks", "Tasks")
+  ]);
+
+  const messages = [];
+  if (profileResult.status === "fulfilled") {
+    state.user = profileResult.value;
+    updateUserProfile(profileResult.value);
+  } else {
+    state.user = null;
+    updateUserProfile(null);
+    messages.push("Profile details are unavailable.");
   }
+
+  if (tasksResult.status === "fulfilled" && Array.isArray(tasksResult.value)) {
+    state.tasks = tasksResult.value;
+    renderSummary(state.tasks);
+    renderBoard(state.tasks);
+  } else {
+    messages.push("Tasks could not be loaded. Use Refresh to try again.");
+    boardMessage.textContent = "Tasks could not be loaded. Use Refresh to try again.";
+    boardMessage.hidden = false;
+  }
+
+  if (messages.length) {
+    pageStatus.classList.add("status-error");
+    pageStatus.textContent = messages.join(" ");
+  } else {
+    pageStatus.textContent = `${state.tasks.length} tasks loaded`;
+  }
+
+  refreshButton.disabled = false;
 }
 
 function bindEvents() {
@@ -246,4 +288,3 @@ function bindEvents() {
 
 bindEvents();
 loadData();
-

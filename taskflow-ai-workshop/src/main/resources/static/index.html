@@ -8,86 +8,84 @@
   </head>
   <body>
     <div class="app-shell">
-      <aside class="sidebar" aria-label="Sidebar navigation">
-        <div class="brand">
-          <img src="/images/uvj-logo.svg" alt="UVJ Technologies logo" class="brand-logo">
+      <aside class="sidebar" aria-label="Primary navigation">
+        <a class="brand" href="#dashboard" aria-label="UVJTaskFlow dashboard">
+          <img src="/images/uvj-logo.png" alt="UVJ Technologies logo" class="brand-logo">
           <div class="brand-copy">
-            <span class="brand-kicker">UVJ Technologies</span>
             <h1>UVJTaskFlow</h1>
+            <span class="brand-tagline">Plan · Track · Deliver</span>
           </div>
-        </div>
+        </a>
 
-        <nav class="nav" aria-label="Primary navigation">
-          <button class="nav-item active" type="button">Dashboard</button>
-          <button class="nav-item" type="button">Tasks</button>
-          <button class="nav-item" type="button">My Tasks</button>
-          <button class="nav-item" type="button">Board</button>
-          <button class="nav-item" type="button">Timeline</button>
-          <button class="nav-item" type="button">Reports</button>
-          <button class="nav-item" type="button">Milestones</button>
-          <button class="nav-item" type="button">Team</button>
-          <button class="nav-item" type="button">Settings</button>
+        <nav class="nav" aria-label="Dashboard sections">
+          <a class="nav-item active" href="#dashboard">Dashboard</a>
+          <a class="nav-item" href="#task-board">Task board</a>
         </nav>
+
+        <div class="sidebar-note">
+          <span>Powered by</span>
+          <strong>UVJ Technologies</strong>
+        </div>
       </aside>
 
       <div class="main-panel">
         <header class="topbar">
           <label class="search-field" for="global-search">
-            <span class="search-icon" aria-hidden="true">⌕</span>
-            <input id="global-search" type="search" placeholder="Search tasks..." aria-label="Search tasks">
+            <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="10.8" cy="10.8" r="6.8"></circle>
+              <path d="m16 16 4.5 4.5"></path>
+            </svg>
+            <input id="global-search" type="search" placeholder="Search tasks by title or description" aria-label="Search tasks by title or description">
           </label>
 
-          <div class="profile-pill" aria-live="polite">
+          <div class="profile-pill" aria-label="Current user profile">
             <div class="profile-copy">
-              <span class="welcome-label">Welcome back</span>
-              <strong id="user-name">Loading…</strong>
-              <span id="user-role" class="user-role">Loading…</span>
+              <strong id="user-name">Loading profile…</strong>
+              <span id="user-role" class="user-role" hidden></span>
             </div>
-            <div id="user-avatar" class="user-avatar" aria-label="Current user avatar">--</div>
+            <div id="user-avatar" class="user-avatar" role="img" aria-label="Current user profile image">UV</div>
           </div>
         </header>
 
-        <main class="dashboard-content">
-          <section class="page-intro" aria-label="Task summary header">
-            <div>
-              <p class="eyebrow">Overview</p>
-              <h2>Performance dashboard</h2>
+        <main id="dashboard" class="dashboard-content">
+          <section class="overview-panel" aria-labelledby="welcome-heading">
+            <div class="welcome-copy">
+              <p class="eyebrow">Your workspace</p>
+              <h2 id="welcome-heading">Welcome to UVJTaskFlow</h2>
+              <p class="welcome-description">Your work, clearly in flow.</p>
+              <p class="summary-badge" id="page-status" role="status" aria-live="polite">Loading dashboard…</p>
             </div>
-            <div class="summary-badge" id="page-status" role="status">Loading data…</div>
-          </section>
 
-          <section class="summary-grid" aria-label="Task summary cards">
-            <article class="summary-card total">
-              <div class="card-header">
-                <span>Total Tasks</span>
-                <span class="metric-trend">All</span>
-              </div>
-              <strong id="total-tasks">0</strong>
-            </article>
-            <article class="summary-card completed">
-              <div class="card-header">
+            <div class="summary-grid" aria-label="Task summary">
+              <article class="summary-card total">
+                <span>Total tasks</span>
+                <strong id="total-tasks">0</strong>
+              </article>
+              <article class="summary-card completed">
                 <span>Completed</span>
-                <span class="metric-trend">Done</span>
-              </div>
-              <strong id="completed-tasks">0</strong>
-            </article>
-            <article class="summary-card progress">
-              <div class="card-header">
-                <span>In Progress</span>
-                <span class="metric-trend">Active</span>
-              </div>
-              <strong id="in-progress-tasks">0</strong>
-            </article>
-            <article class="summary-card todo">
-              <div class="card-header">
-                <span>To Do</span>
-                <span class="metric-trend">Queued</span>
-              </div>
-              <strong id="todo-tasks">0</strong>
-            </article>
+                <strong id="completed-tasks">0</strong>
+              </article>
+              <article class="summary-card progress">
+                <span>In progress</span>
+                <strong id="in-progress-tasks">0</strong>
+              </article>
+              <article class="summary-card todo">
+                <span>To do</span>
+                <strong id="todo-tasks">0</strong>
+              </article>
+            </div>
           </section>
 
-          <section class="board-controls" aria-label="Task filters">
+          <section id="task-board" class="board-section" aria-labelledby="board-title">
+            <header class="board-heading">
+              <div>
+                <p class="eyebrow">Work overview</p>
+                <h2 id="board-title">Task board</h2>
+                <p class="board-description">Track tasks across their current stages.</p>
+              </div>
+            </header>
+
+            <section class="board-controls" aria-label="Task filters and actions">
             <div class="filter-group">
               <label class="filter-field">
                 <span>Priority</span>
@@ -112,50 +110,61 @@
             </div>
 
             <div class="actions-group">
-              <button id="refresh-data" class="secondary-button" type="button">Refresh</button>
+              <button id="refresh-data" class="secondary-button" type="button" aria-label="Refresh tasks">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20 7v5h-5M4 17v-5h5"></path>
+                  <path d="M5.7 9a7 7 0 0 1 11.6-2L20 12M4 12l2.7 5a7 7 0 0 0 11.6-2"></path>
+                </svg>
+                <span>Refresh</span>
+              </button>
               <button id="clear-filters" class="secondary-button" type="button">Clear filters</button>
             </div>
-          </section>
+            </section>
 
-          <section class="board" aria-label="Kanban board">
-            <div class="board-column" data-column="To Do">
-              <header>
-                <h3>To Do</h3>
-                <span class="column-count" id="count-todo">0</span>
-              </header>
-              <div id="tasks-todo" class="task-list" aria-live="polite"></div>
-            </div>
+            <p id="board-message" class="board-message" role="status" aria-live="polite" hidden></p>
 
-            <div class="board-column" data-column="In Progress">
-              <header>
-                <h3>In Progress</h3>
-                <span class="column-count" id="count-in-progress">0</span>
-              </header>
-              <div id="tasks-in-progress" class="task-list" aria-live="polite"></div>
-            </div>
+            <div class="board" aria-label="Task status columns">
+              <section class="board-column todo-column" data-column="To Do" aria-labelledby="heading-todo">
+                <header>
+                  <h3 id="heading-todo">To Do</h3>
+                  <span class="column-count" id="count-todo">0</span>
+                </header>
+                <div id="tasks-todo" class="task-list"></div>
+              </section>
 
-            <div class="board-column" data-column="Completed">
-              <header>
-                <h3>Completed</h3>
-                <span class="column-count" id="count-completed">0</span>
-              </header>
-              <div id="tasks-completed" class="task-list" aria-live="polite"></div>
-            </div>
+              <section class="board-column progress-column" data-column="In Progress" aria-labelledby="heading-progress">
+                <header>
+                  <h3 id="heading-progress">In Progress</h3>
+                  <span class="column-count" id="count-in-progress">0</span>
+                </header>
+                <div id="tasks-in-progress" class="task-list"></div>
+              </section>
 
-            <div class="board-column" data-column="On Hold">
-              <header>
-                <h3>On Hold</h3>
-                <span class="column-count" id="count-on-hold">0</span>
-              </header>
-              <div id="tasks-on-hold" class="task-list" aria-live="polite"></div>
+              <section class="board-column completed-column" data-column="Completed" aria-labelledby="heading-completed">
+                <header>
+                  <h3 id="heading-completed">Completed</h3>
+                  <span class="column-count" id="count-completed">0</span>
+                </header>
+                <div id="tasks-completed" class="task-list"></div>
+              </section>
+
+              <section class="board-column hold-column" data-column="On Hold" aria-labelledby="heading-hold">
+                <header>
+                  <h3 id="heading-hold">On Hold</h3>
+                  <span class="column-count" id="count-on-hold">0</span>
+                </header>
+                <div id="tasks-on-hold" class="task-list"></div>
+              </section>
             </div>
           </section>
         </main>
       </div>
     </div>
 
-    <footer class="site-footer">© 2026 UVJ Technologies • Task visibility for modern teams</footer>
+    <footer class="site-footer">
+      <span>© 2026 UVJ Technologies</span>
+      <span>UVJTaskFlow · Task visibility for modern teams</span>
+    </footer>
     <script src="/app.js"></script>
   </body>
 </html>
-
