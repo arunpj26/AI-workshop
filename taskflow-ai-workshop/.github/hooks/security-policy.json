@@ -7,13 +7,6 @@
         "command": "node .github/hooks/enforce-network-policy.cjs",
         "timeout": 5
       }
-    ],
-    "preToolUse": [
-      {
-        "type": "command",
-        "command": "node .github/hooks/enforce-network-policy.cjs",
-        "timeoutSec": 5
-      }
     ]
   }
 }
