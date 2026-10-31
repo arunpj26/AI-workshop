@@ -1,12 +1,149 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TaskFlow | Workshop Starter</title><link rel="stylesheet" href="/styles.css">
-</head><body><main class="container">
-<header><p class="eyebrow">AI-ASSISTED ENGINEERING WORKSHOP</p><h1>TaskFlow</h1>
-<p class="subtitle">A task list for practising the software development lifecycle with GitHub Copilot.</p></header>
-<section class="panel"><div class="panel-heading"><h2>Tasks</h2><button id="reload" type="button">Refresh</button></div>
-<p id="status" role="status">Loading tasks…</p><div class="table-wrap"><table>
-<thead><tr><th>Task</th><th>Description</th><th>Status</th><th>Priority</th></tr></thead><tbody id="tasks"></tbody>
-</table></div></section><footer>Sample data only · The priority filter is the Session 5 feature.</footer>
-</main><script src="/app.js"></script></body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UVJTaskFlow</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Sidebar navigation">
+        <div class="brand-block">
+          <img src="/images/UVJ logo.png" alt="UVJ Technologies logo" class="brand-logo" />
+          <div class="brand-copy">
+            <div class="brand-name">UVJTaskFlow</div>
+            <div class="brand-subtitle">Plan · Track · Deliver</div>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Primary navigation">
+          <a class="nav-item active" href="#dashboard" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">⌂</span>
+            Dashboard
+          </a>
+          <a class="nav-item" href="#task-board">
+            <span class="nav-icon" aria-hidden="true">▣</span>
+            Task Board
+          </a>
+        </nav>
+
+        <footer class="brand-footer">
+          <div class="brand-mark" aria-hidden="true">U</div>
+          <span>Powered by<br />UVJ Technologies</span>
+        </footer>
+      </aside>
+
+      <div class="main-panel">
+        <header class="topbar">
+          <label class="searchbox">
+            <span aria-hidden="true">⌕</span>
+            <input
+              id="task-search"
+              type="search"
+              aria-label="Search tasks by title, description, ID, status, or priority"
+              placeholder="Search tasks..."
+            />
+          </label>
+
+          <div class="profile-wrap">
+            <div class="profile-pill" aria-live="polite">
+              <span id="profile-count" class="profile-count">0</span>
+            </div>
+            <div id="user-profile" class="user-profile" aria-live="polite"></div>
+          </div>
+        </header>
+
+        <main id="dashboard" class="dashboard">
+          <section class="welcome-panel" aria-live="polite">
+            <div class="welcome-copy">
+              <p id="welcome-label" class="welcome-label">Welcome back,</p>
+              <h1 id="welcome-name">Loading profile…</h1>
+              <p id="welcome-role" class="welcome-role">Checking your workspace…</p>
+            </div>
+
+            <div class="summary-grid" role="group" aria-label="Task summary">
+              <article class="summary-card summary-total">
+                <div class="summary-icon" aria-hidden="true">▤</div>
+                <div class="summary-meta">
+                  <strong id="summary-total">0</strong>
+                  <span>Total Tasks</span>
+                </div>
+              </article>
+
+              <article class="summary-card summary-completed">
+                <div class="summary-icon" aria-hidden="true">✓</div>
+                <div class="summary-meta">
+                  <strong id="summary-completed">0</strong>
+                  <span>Completed</span>
+                </div>
+              </article>
+
+              <article class="summary-card summary-progress">
+                <div class="summary-icon" aria-hidden="true">◔</div>
+                <div class="summary-meta">
+                  <strong id="summary-in-progress">0</strong>
+                  <span>In Progress</span>
+                </div>
+              </article>
+
+              <article class="summary-card summary-todo">
+                <div class="summary-icon" aria-hidden="true">☰</div>
+                <div class="summary-meta">
+                  <strong id="summary-to-do">0</strong>
+                  <span>To Do</span>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section id="task-board" class="board-panel" tabindex="-1" aria-labelledby="task-board-heading">
+            <div class="board-header">
+              <div>
+                <h2 id="task-board-heading">Task Board</h2>
+                <p>Manage and track your work across different stages</p>
+              </div>
+
+              <div class="toolbar">
+                <button id="refresh-data" type="button" class="ghost-button">
+                  ↻ Refresh
+                </button>
+              </div>
+            </div>
+
+            <div class="filter-row">
+              <div class="filter-group">
+                <label for="priority-filter">Priority:</label>
+                <select id="priority-filter">
+                  <option value="ALL">All</option>
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label for="status-filter">Status:</label>
+                <select id="status-filter">
+                  <option value="ALL">All</option>
+                  <option value="To Do">To Do</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                  <option value="On Hold">On Hold</option>
+                </select>
+              </div>
+
+              <button id="clear-filters" type="button" class="text-button">Clear</button>
+            </div>
+
+            <div id="status-message" class="status-message" role="status" aria-live="polite"></div>
+
+            <div class="board-columns" id="board-columns" aria-live="polite"></div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
