@@ -1,12 +1,138 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TaskFlow | Workshop Starter</title><link rel="stylesheet" href="/styles.css">
-</head><body><main class="container">
-<header><p class="eyebrow">AI-ASSISTED ENGINEERING WORKSHOP</p><h1>TaskFlow</h1>
-<p class="subtitle">A task list for practising the software development lifecycle with GitHub Copilot.</p></header>
-<section class="panel"><div class="panel-heading"><h2>Tasks</h2><button id="reload" type="button">Refresh</button></div>
-<p id="status" role="status">Loading tasks…</p><div class="table-wrap"><table>
-<thead><tr><th>Task</th><th>Description</th><th>Status</th><th>Priority</th></tr></thead><tbody id="tasks"></tbody>
-</table></div></section><footer>Sample data only · The priority filter is the Session 5 feature.</footer>
-</main><script src="/app.js"></script></body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UVJTaskFlow | Dashboard</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="brand" aria-label="UVJTaskFlow branding">
+          <img src="/assets/UVJ logo.png" alt="UVJ Technologies logo" class="brand-logo">
+          <div class="brand-text">
+            <div class="brand-name">UVJTaskFlow</div>
+            <div class="brand-subtitle">Plan • Track • Deliver</div>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Sidebar navigation">
+          <button class="nav-item active" type="button"><span class="nav-icon" aria-hidden="true">⌂</span><span>Dashboard</span></button>
+          <button class="nav-item" type="button"><span class="nav-icon" aria-hidden="true">☰</span><span>Tasks</span></button>
+          <button class="nav-item" type="button"><span class="nav-icon" aria-hidden="true">◌</span><span>My Tasks</span></button>
+          <button class="nav-item" type="button"><span class="nav-icon" aria-hidden="true">▣</span><span>Board</span></button>
+          <button class="nav-item" type="button"><span class="nav-icon" aria-hidden="true">⏱</span><span>Timeline</span></button>
+          <button class="nav-item" type="button"><span class="nav-icon" aria-hidden="true">▤</span><span>Reports</span></button>
+          <button class="nav-item" type="button"><span class="nav-icon" aria-hidden="true">◫</span><span>Milestones</span></button>
+          <button class="nav-item" type="button"><span class="nav-icon" aria-hidden="true">◍</span><span>Team</span></button>
+          <button class="nav-item" type="button"><span class="nav-icon" aria-hidden="true">⚙</span><span>Settings</span></button>
+        </nav>
+
+        <div class="sidebar-footer" aria-label="UVJ branding">
+          <div class="mini-brand-mark" aria-hidden="true">
+            <img src="/assets/UVJ logo.png" alt="">
+          </div>
+          <div class="sidebar-footer-text">
+            <span>Powered by</span>
+            <strong>UVJ Technologies</strong>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar" aria-label="Top bar">
+          <label class="search-field global-search" for="globalSearch">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input id="globalSearch" type="search" placeholder="Search tasks, people, or keywords..." aria-label="Search tasks, people, or keywords">
+          </label>
+
+          <div class="profile-chip" aria-live="polite">
+            <div id="profileAvatar" class="profile-avatar" aria-label="User avatar">DU</div>
+            <div class="profile-meta">
+              <div id="profileName" class="profile-name">Demo User</div>
+              <div id="profileRole" class="profile-role">Project Member</div>
+            </div>
+          </div>
+        </header>
+
+        <section class="welcome-banner" aria-labelledby="welcomeName">
+          <div class="welcome-copy">
+            <p class="greeting">Welcome back,</p>
+            <h1 id="welcomeName">Demo User!</h1>
+            <p class="welcome-subtitle">Your work, clearly in flow.</p>
+          </div>
+
+          <div class="summary-cards" aria-label="Task summary">
+            <article class="summary-card total">
+              <div class="summary-icon" aria-hidden="true">▤</div>
+              <div class="summary-value" id="summaryTotal">0</div>
+              <div class="summary-label">Total Tasks</div>
+            </article>
+            <article class="summary-card completed">
+              <div class="summary-icon" aria-hidden="true">✓</div>
+              <div class="summary-value" id="summaryCompleted">0</div>
+              <div class="summary-label">Completed</div>
+            </article>
+            <article class="summary-card progress">
+              <div class="summary-icon" aria-hidden="true">◔</div>
+              <div class="summary-value" id="summaryInProgress">0</div>
+              <div class="summary-label">In Progress</div>
+            </article>
+            <article class="summary-card todo">
+              <div class="summary-icon" aria-hidden="true">☑</div>
+              <div class="summary-value" id="summaryTodo">0</div>
+              <div class="summary-label">To Do</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="board-panel" aria-labelledby="boardTitle">
+          <div class="board-header">
+            <div>
+              <h2 id="boardTitle">Task Board</h2>
+              <p>Manage and track your work across different stages</p>
+            </div>
+            <div class="board-header-actions">
+              <button class="ghost-button" type="button">All Projects</button>
+              <button class="ghost-button" type="button">Oct 25, 2026 – Nov 01, 2026</button>
+            </div>
+          </div>
+
+          <div class="filter-row" aria-label="Task filters">
+            <label class="mini-search" for="taskSearch">
+              <span aria-hidden="true">⌕</span>
+              <input id="taskSearch" type="search" placeholder="Search tasks..." aria-label="Search tasks">
+            </label>
+            <label>
+              <span class="sr-only">Priority filter</span>
+              <select id="priorityFilter" aria-label="Filter tasks by priority">
+                <option value="ALL">Priority: All</option>
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+              </select>
+            </label>
+            <label>
+              <span class="sr-only">Status filter</span>
+              <select id="statusFilter" aria-label="Filter tasks by status">
+                <option value="ALL">Status: All</option>
+                <option value="OPEN">To Do</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="ON_HOLD">On Hold</option>
+              </select>
+            </label>
+            <button id="clearFilters" class="text-link" type="button">Clear</button>
+            <button id="reload" class="primary-button" type="button">Refresh</button>
+          </div>
+
+          <p id="status" class="status-text" role="status">Loading tasks…</p>
+          <div id="board" class="board-grid" aria-live="polite"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

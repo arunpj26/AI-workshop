@@ -1,7 +1,7 @@
 package com.example.taskflow.task;
 
-import org.springframework.stereotype.Service;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TaskService {
@@ -12,5 +12,12 @@ public class TaskService {
         new Task(4, "Add API documentation", "Document task endpoints", "OPEN", "MEDIUM"),
         new Task(5, "Improve error handling", "Return consistent API errors", "IN_PROGRESS", "HIGH")
     );
+
     public List<Task> findAll() { return tasks; }
+
+    public List<Task> findAllByPriority(String priority) {
+        return tasks.stream()
+            .filter(task -> priority.equals(task.priority()))
+            .toList();
+    }
 }
