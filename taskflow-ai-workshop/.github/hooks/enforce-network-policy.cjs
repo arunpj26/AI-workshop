@@ -32,7 +32,7 @@ function asText(value) {
 }
 
 // Hosts allowed for shell downloads: local app plus Atlassian's attachment download host.
-const ALLOWED_HOST = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\]|api\.media\.atlassian\.com)(:\d+)?$/;
+const ALLOWED_HOST = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\]|api\.media\.atlassian\.com|api\.github\.com)(:\d+)?$/;
 
 function onlyAllowedUrls(text) {
   const urls = text.match(/https?:\/\/[^\s"'\\/]+/g) || [];
