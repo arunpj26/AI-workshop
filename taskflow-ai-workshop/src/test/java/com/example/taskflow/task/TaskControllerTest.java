@@ -24,4 +24,25 @@ class TaskControllerTest {
             .andExpect(jsonPath("$", hasSize(5)))
             .andExpect(jsonPath("$[0].priority", is("HIGH")));
     }
+
+    @Test
+    void getTasksFiltersByPriority() throws Exception {
+        mockMvc.perform(get("/api/tasks").param("priority", "HIGH"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].priority", is("HIGH")))
+            .andExpect(jsonPath("$[1].priority", is("HIGH")));
+    }
+
+    @Test
+    void getTasksRejectsUnsupportedPriority() throws Exception {
+        mockMvc.perform(get("/api/tasks").param("priority", "URGENT"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getTasksRejectsBlankPriority() throws Exception {
+        mockMvc.perform(get("/api/tasks").param("priority", ""))
+            .andExpect(status().isBadRequest());
+    }
 }
