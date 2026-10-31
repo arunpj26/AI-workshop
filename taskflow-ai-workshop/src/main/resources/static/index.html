@@ -1,12 +1,161 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TaskFlow | Workshop Starter</title><link rel="stylesheet" href="/styles.css">
-</head><body><main class="container">
-<header><p class="eyebrow">AI-ASSISTED ENGINEERING WORKSHOP</p><h1>TaskFlow</h1>
-<p class="subtitle">A task list for practising the software development lifecycle with GitHub Copilot.</p></header>
-<section class="panel"><div class="panel-heading"><h2>Tasks</h2><button id="reload" type="button">Refresh</button></div>
-<p id="status" role="status">Loading tasks…</p><div class="table-wrap"><table>
-<thead><tr><th>Task</th><th>Description</th><th>Status</th><th>Priority</th></tr></thead><tbody id="tasks"></tbody>
-</table></div></section><footer>Sample data only · The priority filter is the Session 5 feature.</footer>
-</main><script src="/app.js"></script></body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f8f6">
+    <title>UVJTaskFlow | Task dashboard</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Application sidebar">
+        <a class="brand" href="#overview" aria-label="UVJTaskFlow dashboard">
+          <img src="/images/UVJ%20logo.png" alt="UVJ Technologies">
+          <span class="brand-copy">
+            <span class="brand-name">UVJ<span>TaskFlow</span></span>
+            <span class="brand-tagline">Plan <span aria-hidden="true">·</span> Track <span aria-hidden="true">·</span> Deliver</span>
+          </span>
+        </a>
+
+        <nav class="primary-nav" aria-label="Primary navigation">
+          <a class="nav-link is-active" href="#overview" aria-current="location">
+            <span class="nav-marker" aria-hidden="true"></span>
+            Dashboard
+          </a>
+          <a class="nav-link" href="#task-board">
+            <span class="nav-marker" aria-hidden="true"></span>
+            Board
+          </a>
+        </nav>
+
+        <div class="sidebar-branding">
+          <img src="/images/UVJ%20logo.png" alt="" aria-hidden="true">
+          <p>Powered by<br><strong>UVJ Technologies</strong></p>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <label class="search-control">
+            <span class="visually-hidden">Search tasks</span>
+            <span class="search-icon" aria-hidden="true"></span>
+            <input id="task-search" type="search" placeholder="Search tasks..." autocomplete="off">
+          </label>
+          <button id="refresh" class="button button-secondary" type="button">Refresh</button>
+          <div class="profile" aria-live="polite">
+            <span id="profile-avatar" class="avatar avatar-fallback" aria-hidden="true">U</span>
+            <span class="profile-copy">
+              <span id="profile-name" class="profile-name">User</span>
+              <span id="profile-role" class="profile-role" hidden></span>
+            </span>
+          </div>
+        </header>
+
+        <div class="content">
+          <section id="overview" class="welcome-panel" aria-labelledby="welcome-heading">
+            <div class="welcome-copy">
+              <p class="eyebrow">YOUR WORKSPACE</p>
+              <h1 id="welcome-heading">Welcome back<span id="welcome-name"></span></h1>
+              <p class="welcome-subtitle">Your work, clearly in flow.</p>
+            </div>
+            <section class="summary-grid" aria-label="Task summary">
+              <article class="summary-card summary-total">
+                <span id="total-count" class="summary-count">0</span>
+                <span class="summary-label">Total tasks</span>
+              </article>
+              <article class="summary-card summary-completed">
+                <span id="completed-count" class="summary-count">0</span>
+                <span class="summary-label">Completed</span>
+              </article>
+              <article class="summary-card summary-progress">
+                <span id="progress-count" class="summary-count">0</span>
+                <span class="summary-label">In progress</span>
+              </article>
+              <article class="summary-card summary-todo">
+                <span id="todo-count" class="summary-count">0</span>
+                <span class="summary-label">To do</span>
+              </article>
+            </section>
+          </section>
+
+          <section id="task-board" class="board-section" aria-labelledby="board-heading">
+            <div class="board-heading">
+              <div>
+                <p class="eyebrow">TASK MANAGEMENT</p>
+                <h2 id="board-heading">Task board</h2>
+                <p class="section-description">Manage and track your work across different stages.</p>
+              </div>
+            </div>
+
+            <div class="board-toolbar">
+              <label class="filter-control">
+                <span>Priority</span>
+                <select id="priority-filter">
+                  <option value="">All priorities</option>
+                  <option value="HIGH">High</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="LOW">Low</option>
+                </select>
+              </label>
+              <label class="filter-control">
+                <span>Status</span>
+                <select id="status-filter">
+                  <option value="">All statuses</option>
+                  <option value="OPEN">To do</option>
+                  <option value="IN_PROGRESS">In progress</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="ON_HOLD">On hold</option>
+                </select>
+              </label>
+              <button id="clear-filters" class="button button-link" type="button">Clear filters</button>
+            </div>
+
+            <p id="task-status" class="status-message" role="status" aria-live="polite">Loading tasks...</p>
+            <div id="task-error" class="error-message" role="alert" hidden></div>
+            <div id="profile-error" class="profile-message" role="status" hidden></div>
+
+            <div class="board-grid">
+              <section class="board-column column-todo" aria-labelledby="todo-heading">
+                <header class="column-heading">
+                  <span class="column-dot" aria-hidden="true"></span>
+                  <h3 id="todo-heading">To do</h3>
+                  <span id="todo-column-count" class="column-count">0</span>
+                </header>
+                <div id="todo-tasks" class="task-list"></div>
+              </section>
+              <section class="board-column column-progress" aria-labelledby="progress-heading">
+                <header class="column-heading">
+                  <span class="column-dot" aria-hidden="true"></span>
+                  <h3 id="progress-heading">In progress</h3>
+                  <span id="progress-column-count" class="column-count">0</span>
+                </header>
+                <div id="progress-tasks" class="task-list"></div>
+              </section>
+              <section class="board-column column-completed" aria-labelledby="completed-heading">
+                <header class="column-heading">
+                  <span class="column-dot" aria-hidden="true"></span>
+                  <h3 id="completed-heading">Completed</h3>
+                  <span id="completed-column-count" class="column-count">0</span>
+                </header>
+                <div id="completed-tasks" class="task-list"></div>
+              </section>
+              <section class="board-column column-hold" aria-labelledby="hold-heading">
+                <header class="column-heading">
+                  <span class="column-dot" aria-hidden="true"></span>
+                  <h3 id="hold-heading">On hold</h3>
+                  <span id="hold-column-count" class="column-count">0</span>
+                </header>
+                <div id="hold-tasks" class="task-list"></div>
+              </section>
+            </div>
+            <p id="no-matches" class="no-matches" hidden>No tasks match these filters.</p>
+          </section>
+        </div>
+
+        <footer class="page-footer">UVJTaskFlow <span aria-hidden="true">·</span> Powered by UVJ Technologies</footer>
+      </main>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>
