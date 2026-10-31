@@ -1,12 +1,66 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TaskFlow | Workshop Starter</title><link rel="stylesheet" href="/styles.css">
-</head><body><main class="container">
-<header><p class="eyebrow">AI-ASSISTED ENGINEERING WORKSHOP</p><h1>TaskFlow</h1>
-<p class="subtitle">A task list for practising the software development lifecycle with GitHub Copilot.</p></header>
-<section class="panel"><div class="panel-heading"><h2>Tasks</h2><button id="reload" type="button">Refresh</button></div>
-<p id="status" role="status">Loading tasks…</p><div class="table-wrap"><table>
-<thead><tr><th>Task</th><th>Description</th><th>Status</th><th>Priority</th></tr></thead><tbody id="tasks"></tbody>
-</table></div></section><footer>Sample data only · The priority filter is the Session 5 feature.</footer>
-</main><script src="/app.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UVJTaskFlow</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="/" aria-label="UVJTaskFlow dashboard">
+      <img src="/images/UVJ%20logo.png" alt="UVJ Technologies logo">
+      <span><strong>UVJTaskFlow</strong><small>Plan · Track · Deliver</small></span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a class="nav-item active" href="/" aria-current="page"><span aria-hidden="true">⌂</span> Dashboard</a>
+      <a class="nav-item" href="#task-board"><span aria-hidden="true">▦</span> Tasks</a>
+      <a class="nav-item" href="#task-board"><span aria-hidden="true">▤</span> Board</a>
+    </nav>
+    <div class="powered-by"><img src="/images/UVJ%20logo.png" alt=""><span>Powered by<strong>UVJ Technologies</strong></span></div>
+  </aside>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="menu-button" id="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">☰</button>
+      <label class="global-search">
+        <span aria-hidden="true">⌕</span>
+        <span class="sr-only">Search tasks</span>
+        <input id="global-search" type="search" placeholder="Search tasks or keywords...">
+      </label>
+      <div class="user-menu">
+        <div class="avatar" id="user-avatar" aria-hidden="true">UV</div>
+        <div><strong id="user-name">UVJ team</strong><small id="user-role">TaskFlow user</small></div>
+      </div>
+    </header>
+
+    <main>
+      <section class="welcome" aria-labelledby="welcome-heading">
+        <div><p id="welcome-heading">Welcome back,</p><h1 id="welcome-name">UVJ team!</h1></div>
+        <div class="summary-grid" aria-label="Task summary">
+          <article class="summary-card"><span class="summary-icon total">▱</span><div><strong id="total-count">0</strong><small>Total Tasks</small></div></article>
+          <article class="summary-card"><span class="summary-icon completed">✓</span><div><strong id="completed-count">0</strong><small>Completed</small></div></article>
+          <article class="summary-card"><span class="summary-icon progress">◷</span><div><strong id="progress-count">0</strong><small>In Progress</small></div></article>
+          <article class="summary-card"><span class="summary-icon todo">≡</span><div><strong id="todo-count">0</strong><small>To Do</small></div></article>
+        </div>
+      </section>
+
+      <section class="board-section" id="task-board" aria-labelledby="board-heading">
+        <div class="board-heading">
+          <div><h2 id="board-heading">Task Board</h2><p>Manage and track your work across different stages</p></div>
+          <button id="refresh" class="refresh-button" type="button">↻ Refresh</button>
+        </div>
+        <div class="filters" aria-label="Task filters">
+          <label>Search<input id="task-search" type="search" placeholder="Search tasks..."></label>
+          <label>Priority<select id="priority-filter"><option value="">All priorities</option><option value="HIGH">High</option><option value="MEDIUM">Medium</option><option value="LOW">Low</option></select></label>
+          <label>Status<select id="status-filter"><option value="">All statuses</option><option value="OPEN">To Do</option><option value="IN_PROGRESS">In Progress</option><option value="COMPLETED">Completed</option><option value="ON_HOLD">On Hold</option></select></label>
+          <button id="clear-filters" type="button">Clear</button>
+        </div>
+        <p id="status" class="status" role="status">Loading tasks...</p>
+        <div class="kanban" id="kanban"></div>
+      </section>
+    </main>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>

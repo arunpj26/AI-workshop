@@ -1,9 +1,8 @@
 ---
 name: application-run-local
-description: Start TaskFlow locally, verify backend and frontend availability, and open the app in a browser when supported.
-agent: agent
+description: "Start TaskFlow locally, verify backend and frontend availability, and open the app in a browser when supported."
+disable-model-invocation: true
 ---
-
 # Run TaskFlow Locally
 
 Prepare and run the existing TaskFlow application locally so the user can inspect the current UI before making changes.

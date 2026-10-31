@@ -1,7 +1,7 @@
 ---
 name: plan-feature
-agent: agent
 description: Create a reviewable implementation and test plan without changing files.
+disable-model-invocation: true
 ---
 Using the approved story and acceptance criteria, inspect relevant files and produce a plan only. Do not create or edit files.
 
