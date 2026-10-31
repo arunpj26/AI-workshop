@@ -37,7 +37,7 @@ class UserControllerTest {
     void existingTasksEndpointIsUnchanged() throws Exception {
         mockMvc.perform(get("/api/tasks"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()", is(5)))
+            .andExpect(jsonPath("$.length()", is(6)))
             .andExpect(jsonPath("$[0].title", is("Implement login")))
             .andExpect(jsonPath("$[0].status", is("IN_PROGRESS")))
             .andExpect(jsonPath("$[0].priority", is("HIGH")));

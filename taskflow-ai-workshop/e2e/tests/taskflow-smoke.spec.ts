@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test";
-test("TaskFlow displays the task list", async ({ page }) => {
+test("UVJTaskFlow displays the seeded tasks on the board", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "TaskFlow" })).toBeVisible();
-  await expect(page.getByRole("columnheader", { name: "Task" })).toBeVisible();
-  await expect(page.getByText("5 tasks loaded")).toBeVisible();
-  await expect(page.getByText("Implement login")).toBeVisible();
+  await expect(page).toHaveTitle("UVJTaskFlow");
+  await expect(page.getByRole("heading", { name: "Task Board" })).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText("6 tasks loaded");
+  await expect(page.getByRole("heading", { name: "Implement login" })).toBeVisible();
 });

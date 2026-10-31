@@ -21,7 +21,18 @@ class TaskControllerTest {
         mockMvc.perform(get("/api/tasks"))
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith("application/json"))
-            .andExpect(jsonPath("$", hasSize(5)))
+            .andExpect(jsonPath("$", hasSize(6)))
             .andExpect(jsonPath("$[0].priority", is("HIGH")));
+    }
+
+    @Test
+    void getTasksIncludesOnHoldSeedTask() throws Exception {
+        mockMvc.perform(get("/api/tasks"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[5].id", is(6)))
+            .andExpect(jsonPath("$[5].title", is("Plan data migration")))
+            .andExpect(jsonPath("$[5].description", is("Paused until the reporting database is available")))
+            .andExpect(jsonPath("$[5].status", is("ON_HOLD")))
+            .andExpect(jsonPath("$[5].priority", is("LOW")));
     }
 }
