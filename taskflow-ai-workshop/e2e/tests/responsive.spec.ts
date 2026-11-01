@@ -16,12 +16,36 @@ test("Responsive Design - Desktop Layout", async ({ page }) => {
   const mainContent = page.locator('.main-content');
   await expect(mainContent).toBeVisible();
   
-  // Verify no horizontal overflow
-  const appContainer = page.locator('.app-container');
-  const overflowX = await appContainer.evaluate(() => {
-    return window.getComputedStyle(document.querySelector('.app-container')!).overflowX;
-  });
-  expect(overflowX).toMatch(/auto|hidden/);
+  const hasHorizontalOverflow = await page.evaluate(() =>
+    document.documentElement.scrollWidth > document.documentElement.clientWidth
+  );
+  expect(hasHorizontalOverflow).toBe(false);
+});
+
+test("Responsive Design - No page overflow at desktop, tablet, and mobile widths", async ({ page }) => {
+  await page.goto("/");
+
+  for (const viewport of [
+    { width: 1280, height: 900 },
+    { width: 768, height: 1024 },
+    { width: 390, height: 844 }
+  ]) {
+    await page.setViewportSize(viewport);
+    const hasHorizontalOverflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth > document.documentElement.clientWidth
+    );
+    expect(hasHorizontalOverflow, `horizontal overflow at ${viewport.width}px`).toBe(false);
+  }
+});
+
+test("Accessibility - Keyboard focus has a visible indicator", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+
+  const focusedElement = page.locator(":focus");
+  await expect(focusedElement).toBeVisible();
+  await expect(focusedElement).toHaveCSS("outline-style", "solid");
+  await expect(focusedElement).toHaveCSS("outline-width", "3px");
 });
 
 test("Responsive Design - Text Readability Across Viewports", async ({ page }) => {

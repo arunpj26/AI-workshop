@@ -11,14 +11,14 @@
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <img src="/images/UVJ logo.png" alt="UVJ Technologies Logo" class="logo">
+        <img src="/images/UVJ%20logo.png" alt="UVJ Technologies" class="logo">
         <div class="branding">
           <h1>UVJTaskFlow</h1>
           <p class="tagline">Plan · Track · Deliver</p>
         </div>
       </div>
 
-      <nav class="sidebar-nav">
+      <nav class="sidebar-nav" aria-label="Main navigation">
         <a href="#dashboard" class="nav-item active">
           <span class="nav-icon">🏠</span>
           <span class="nav-label">Dashboard</span>
@@ -68,15 +68,19 @@
       <!-- Header -->
       <header class="top-header">
         <div class="header-left">
+          <label class="visually-hidden" for="global-search">Search tasks, people, or keywords</label>
           <input type="search" id="global-search" class="search-input" placeholder="Search tasks, people, or keywords...">
         </div>
         <div class="header-right">
-          <button id="notifications" class="header-icon-btn" title="Notifications" aria-label="Notifications">
+          <button id="refresh-tasks" class="header-icon-btn refresh-btn" type="button" title="Refresh tasks" aria-label="Refresh tasks">
+            <span aria-hidden="true">↻</span>
+          </button>
+          <button id="notifications" class="header-icon-btn" type="button" title="Notifications" aria-label="Notifications">
             🔔
             <span class="notification-badge">3</span>
           </button>
           <div class="user-profile">
-            <div id="user-avatar" class="user-avatar" title="User Profile">
+            <div id="user-avatar" class="user-avatar" aria-hidden="true">
               <span id="user-initials">...</span>
             </div>
             <div class="user-info">
@@ -88,42 +92,42 @@
       </header>
 
       <!-- Dashboard Section -->
-      <section class="dashboard-section">
+      <section class="dashboard-section" aria-labelledby="welcome-greeting">
         <div class="welcome-section">
-          <h2 id="welcome-greeting" class="welcome-greeting">Welcome back,</h2>
-          <h1 id="welcome-name" class="welcome-name">Taskflow User!</h1>
-          <p id="welcome-subtitle" class="welcome-subtitle">Your work, clearly in flow.</p>
-        </div>
-
-        <!-- Summary Cards -->
-        <div class="summary-cards" id="summary-cards">
+          <div class="welcome-copy">
+            <h2 id="welcome-greeting" class="welcome-greeting">Welcome back,</h2>
+            <h1 id="welcome-name" class="welcome-name">Your tasks, in flow.</h1>
+            <p id="welcome-subtitle" class="welcome-subtitle">A clear view of what is moving and what comes next.</p>
+          </div>
+          <div class="summary-cards" id="summary-cards" aria-label="Task summary" aria-live="polite">
           <div class="summary-card total">
-            <div class="summary-icon">📚</div>
+            <div class="summary-icon" aria-hidden="true">▤</div>
             <div class="summary-content">
+              <p id="total-count" class="summary-value">—</p>
               <p class="summary-label">Total Tasks</p>
-              <p id="total-count" class="summary-value">0</p>
             </div>
           </div>
           <div class="summary-card completed">
-            <div class="summary-icon">✅</div>
+            <div class="summary-icon" aria-hidden="true">✓</div>
             <div class="summary-content">
+              <p id="completed-count" class="summary-value">—</p>
               <p class="summary-label">Completed</p>
-              <p id="completed-count" class="summary-value">0</p>
             </div>
           </div>
           <div class="summary-card in-progress">
-            <div class="summary-icon">⏱️</div>
+            <div class="summary-icon" aria-hidden="true">◷</div>
             <div class="summary-content">
+              <p id="in-progress-count" class="summary-value">—</p>
               <p class="summary-label">In Progress</p>
-              <p id="in-progress-count" class="summary-value">0</p>
             </div>
           </div>
           <div class="summary-card to-do">
-            <div class="summary-icon">📝</div>
+            <div class="summary-icon" aria-hidden="true">☷</div>
             <div class="summary-content">
+              <p id="to-do-count" class="summary-value">—</p>
               <p class="summary-label">To Do</p>
-              <p id="to-do-count" class="summary-value">0</p>
             </div>
+          </div>
           </div>
         </div>
       </section>
@@ -136,7 +140,7 @@
             <p class="board-subtitle">Manage and track your work across different stages</p>
           </div>
           <div class="board-controls">
-            <button id="create-task-btn" class="btn btn-primary">+ Create Task</button>
+            <button id="create-task-btn" class="btn btn-primary" type="button">+ Create Task</button>
           </div>
         </div>
 
@@ -149,6 +153,7 @@
             <button class="view-btn" data-view="analytics" title="Analytics View">📊 Analytics</button>
           </div>
           <div class="filter-controls">
+            <label class="visually-hidden" for="task-search">Search tasks</label>
             <input type="search" id="task-search" class="search-input-sm" placeholder="Search tasks...">
             <select id="priority-filter" class="filter-select" aria-label="Filter by priority">
               <option value="">Priority: All</option>
@@ -171,7 +176,10 @@
         </div>
 
         <!-- Status Message -->
-        <p id="board-status" role="status" class="board-status">Loading board...</p>
+        <div class="board-feedback">
+          <p id="board-status" role="status" class="board-status" aria-live="polite">Loading tasks...</p>
+          <button id="retry-load" class="btn btn-secondary retry-btn" type="button" hidden>Try again</button>
+        </div>
 
         <!-- Kanban Board -->
         <div class="kanban-board" id="kanban-board">
