@@ -1,12 +1,134 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TaskFlow | Workshop Starter</title><link rel="stylesheet" href="/styles.css">
-</head><body><main class="container">
-<header><p class="eyebrow">AI-ASSISTED ENGINEERING WORKSHOP</p><h1>TaskFlow</h1>
-<p class="subtitle">A task list for practising the software development lifecycle with GitHub Copilot.</p></header>
-<section class="panel"><div class="panel-heading"><h2>Tasks</h2><button id="reload" type="button">Refresh</button></div>
-<p id="status" role="status">Loading tasks…</p><div class="table-wrap"><table>
-<thead><tr><th>Task</th><th>Description</th><th>Status</th><th>Priority</th></tr></thead><tbody id="tasks"></tbody>
-</table></div></section><footer>Sample data only · The priority filter is the Session 5 feature.</footer>
-</main><script src="/app.js"></script></body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UVJTaskFlow | Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Primary navigation">
+        <div class="brand-block">
+          <img class="brand-logo" src="/images/uvj-logo.png" alt="UVJ Technologies logo" />
+          <div class="brand-copy">
+            <h1 class="brand-name">UVJTaskFlow</h1>
+            <div class="brand-tagline">Plan · Track · Deliver</div>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Main navigation">
+          <a class="nav-item active" href="#dashboard" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">⌂</span>
+            <span>Dashboard</span>
+          </a>
+          <a class="nav-item" href="#task-board">
+            <span class="nav-icon" aria-hidden="true">▣</span>
+            <span>Board</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer" aria-label="Powered by UVJ Technologies">
+          <div class="mini-mark"><img src="/images/uvj-logo.png" alt="" aria-hidden="true" /></div>
+          <span>Powered by</span>
+          <strong>UVJ Technologies</strong>
+        </div>
+      </aside>
+
+      <div class="main-panel">
+        <header class="topbar">
+          <label class="search-box" aria-label="Search tasks">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input id="task-search" type="search" aria-label="Search tasks" placeholder="Search tasks..." />
+          </label>
+
+          <div class="profile-chip" aria-live="polite">
+            <div class="user-summary">
+              <div id="user-avatar" class="avatar" aria-label="Current user initials">U</div>
+              <div class="user-meta">
+                <div id="user-name" class="user-name">User</div>
+                <div id="user-role" class="user-role">Team Member</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="content">
+          <section class="welcome-panel" id="dashboard">
+            <div class="welcome-copy">
+              <p class="welcome-kicker">Welcome back,</p>
+              <h1 id="welcome-name">User</h1>
+              <p class="welcome-subtitle">Your work, clearly in flow.</p>
+            </div>
+
+            <div class="summary-grid" aria-label="Task summary">
+              <article class="metric-card total">
+                <div class="metric-icon" aria-hidden="true">▤</div>
+                <div class="metric-value" id="total-count">0</div>
+                <div class="metric-label">Total Tasks</div>
+              </article>
+              <article class="metric-card completed">
+                <div class="metric-icon" aria-hidden="true">✓</div>
+                <div class="metric-value" id="completed-count">0</div>
+                <div class="metric-label">Completed</div>
+              </article>
+              <article class="metric-card in-progress">
+                <div class="metric-icon" aria-hidden="true">◔</div>
+                <div class="metric-value" id="in-progress-count">0</div>
+                <div class="metric-label">In Progress</div>
+              </article>
+              <article class="metric-card todo">
+                <div class="metric-icon" aria-hidden="true">☰</div>
+                <div class="metric-value" id="todo-count">0</div>
+                <div class="metric-label">To Do</div>
+              </article>
+            </div>
+          </section>
+
+          <section class="board-panel" id="task-board" aria-labelledby="board-title">
+            <div class="board-header">
+              <div class="board-heading">
+                <h2 id="board-title">Task Board</h2>
+                <p>Manage and track your work across different stages</p>
+              </div>
+
+              <div class="board-header-controls">
+                <button class="secondary-btn refresh-btn" type="button" id="refresh-tasks">Refresh tasks</button>
+              </div>
+            </div>
+
+            <div class="toolbar" aria-label="Task controls">
+              <div class="filter-controls">
+                <label class="filter-field">
+                  <span class="sr-only">Priority filter</span>
+                  <select id="priority-filter" aria-label="Priority filter">
+                    <option value="ALL">Priority: All</option>
+                    <option value="HIGH">Priority: High</option>
+                    <option value="MEDIUM">Priority: Medium</option>
+                    <option value="LOW">Priority: Low</option>
+                  </select>
+                </label>
+                <label class="filter-field">
+                  <span class="sr-only">Status filter</span>
+                  <select id="status-filter" aria-label="Status filter">
+                    <option value="ALL">Status: All</option>
+                    <option value="OPEN">Status: To Do</option>
+                    <option value="IN_PROGRESS">Status: In Progress</option>
+                    <option value="COMPLETED">Status: Completed</option>
+                    <option value="ON_HOLD">Status: On Hold</option>
+                  </select>
+                </label>
+                <button class="clear-btn" id="clear-filters" type="button">Clear filters</button>
+              </div>
+            </div>
+
+            <p id="task-status" class="task-status" role="status" aria-live="polite">Loading tasks...</p>
+            <div class="board-grid" id="board-grid" aria-live="polite"></div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
