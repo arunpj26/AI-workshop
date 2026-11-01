@@ -1,7 +1,7 @@
 :root {
-  --color-primary: #1fb84d;
+  --color-primary: #176b34;
   --color-primary-light: #e8f7f0;
-  --color-primary-hover: #18a03f;
+  --color-primary-hover: #0f642a;
   --color-secondary: #6c757d;
   --color-grey: #8a92a0;
   --color-grey-light: #f0f2f5;
@@ -57,6 +57,21 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
   color: var(--color-text-primary);
   background: var(--color-grey-lighter);
+}
+
+.skip-link {
+  position: absolute;
+  top: -48px;
+  left: var(--spacing-md);
+  z-index: 10;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-white);
+  background: var(--color-text-primary);
+  border-radius: var(--border-radius);
+}
+
+.skip-link:focus {
+  top: var(--spacing-md);
 }
 
 /* App Container Layout */
@@ -178,7 +193,9 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* ========== TOP HEADER ========== */
@@ -277,6 +294,18 @@ body {
   flex-shrink: 0;
 }
 
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.nav-item:focus-visible {
+  outline: 3px solid var(--color-info);
+  outline-offset: -3px;
+}
+
 .user-info {
   text-align: right;
 }
@@ -296,8 +325,8 @@ body {
 
 /* ========== DASHBOARD SECTION ========== */
 .main-content > :not(.top-header) {
-  overflow-y: auto;
-  flex: 1;
+  flex: 0 0 auto;
+  overflow: visible;
 }
 
 .dashboard-section {
@@ -638,7 +667,6 @@ body {
   padding: var(--spacing-lg);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-sm);
-  cursor: grab;
   transition: all 0.2s ease;
   border-top: 3px solid transparent;
 }

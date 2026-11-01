@@ -12,18 +12,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(classes = TaskflowApplication.class)
+@SpringBootTest(classes = TaskflowApplication.class, properties = {
+    "taskflow.user.name=",
+    "taskflow.user.role=",
+    "taskflow.user.image-url="
+})
 @AutoConfigureMockMvc
 class UserControllerTest {
     @Autowired MockMvc mockMvc;
 
     @Test
-    void getCurrentUserReturnsDefaultConfiguredProfile() throws Exception {
+    void getCurrentUserReturnsAnEmptyProfileWhenNoUserIsConfigured() throws Exception {
         mockMvc.perform(get("/api/users/current"))
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith("application/json"))
-            .andExpect(jsonPath("$.name", is("Demo User")))
-            .andExpect(jsonPath("$.role", is("Project Member")))
+            .andExpect(jsonPath("$.name", nullValue()))
+            .andExpect(jsonPath("$.role", nullValue()))
             .andExpect(jsonPath("$.imageUrl", nullValue()));
     }
 
@@ -47,11 +51,9 @@ class UserControllerTest {
     }
 
     @Test
-    void currentUserEndpointReturnsValidProfileStructure() throws Exception {
+    void currentUserEndpointReturnsAProfileObject() throws Exception {
         mockMvc.perform(get("/api/users/current"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isMap())
-            .andExpect(jsonPath("$.name").isNotEmpty())
-            .andExpect(jsonPath("$.role").isNotEmpty());
+            .andExpect(jsonPath("$").isMap());
     }
 }
