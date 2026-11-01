@@ -2,6 +2,7 @@
 let allTasks = [];
 let filteredTasks = [];
 let userProfile = null;
+let hasLoadedTasks = false;
 let activeFilters = {
   priority: '',
   status: '',
@@ -17,6 +18,8 @@ const statusFilter = document.querySelector('#status-filter');
 const assigneeFilter = document.querySelector('#assignee-filter');
 const clearFiltersBtn = document.querySelector('#clear-filters');
 const createTaskBtn = document.querySelector('#create-task-btn');
+const refreshTasksBtn = document.querySelector('#refresh-tasks');
+const retryLoadBtn = document.querySelector('#retry-load');
 const boardStatus = document.querySelector('#board-status');
 const kanbanBoard = document.querySelector('#kanban-board');
 const emptyState = document.querySelector('#empty-state');
@@ -30,11 +33,11 @@ const welcomeSubtitleEl = document.querySelector('#welcome-subtitle');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+  attachEventListeners();
   await Promise.all([
     loadUserProfile(),
     loadTasks()
   ]);
-  attachEventListeners();
 });
 
 // Load user profile from API
@@ -46,7 +49,8 @@ async function loadUserProfile() {
       displayUserFallback();
       return;
     }
-    userProfile = await response.json();
+    const profile = await response.json();
+    userProfile = profile && typeof profile === 'object' ? profile : null;
     displayUserProfile();
   } catch (error) {
     console.error('Failed to load user profile:', error);
@@ -61,23 +65,29 @@ function displayUserProfile() {
     return;
   }
 
-  const name = userProfile.name || 'Taskflow User';
-  const role = userProfile.role || 'Team Member';
+  const name = typeof userProfile.name === 'string' && userProfile.name.trim()
+    ? userProfile.name.trim()
+    : 'TaskFlow User';
+  const role = typeof userProfile.role === 'string' && userProfile.role.trim()
+    ? userProfile.role.trim()
+    : 'Team Member';
   const imageUrl = userProfile.imageUrl;
 
   // Update header
   userNameEl.textContent = name;
   userRoleEl.textContent = role;
-  welcomeNameEl.textContent = name;
+  welcomeNameEl.textContent = `${name}!`;
 
-  // Set avatar
-  if (imageUrl) {
-    // If imageUrl is available, create an img element
-    userAvatarEl.innerHTML = `<img src="${imageUrl}" alt="${name}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+  userAvatarEl.replaceChildren();
+  const safeImageUrl = getSafeImageUrl(imageUrl);
+  if (safeImageUrl) {
+    const image = document.createElement('img');
+    image.src = safeImageUrl;
+    image.alt = '';
+    image.addEventListener('error', () => displayUserInitials(name), { once: true });
+    userAvatarEl.appendChild(image);
   } else {
-    // Fall back to initials
-    const initials = getInitials(name);
-    userInitialsEl.textContent = initials;
+    displayUserInitials(name);
   }
 }
 
@@ -85,8 +95,26 @@ function displayUserProfile() {
 function displayUserFallback() {
   userNameEl.textContent = 'Welcome';
   userRoleEl.textContent = 'Team Member';
-  welcomeNameEl.textContent = 'Taskflow User!';
-  userInitialsEl.textContent = 'U';
+  welcomeNameEl.textContent = 'Your tasks, in flow.';
+  displayUserInitials('User');
+}
+
+function displayUserInitials(name) {
+  userAvatarEl.replaceChildren();
+  userInitialsEl.textContent = getInitials(name);
+  userAvatarEl.appendChild(userInitialsEl);
+}
+
+function getSafeImageUrl(value) {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  const candidate = value.trim();
+  if (candidate.startsWith('/') && !candidate.startsWith('//')) return candidate;
+  try {
+    const url = new URL(candidate);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null;
+  } catch {
+    return null;
+  }
 }
 
 // Get initials from name
@@ -101,39 +129,53 @@ function getInitials(name) {
 
 // Load tasks from API
 async function loadTasks() {
+  refreshTasksBtn.disabled = true;
+  retryLoadBtn.hidden = true;
+  if (!hasLoadedTasks) boardStatus.textContent = 'Loading tasks...';
   try {
-    boardStatus.textContent = 'Loading board...';
     const response = await fetch('/api/tasks');
     if (!response.ok) {
       throw new Error(`Request failed (${response.status})`);
     }
-    allTasks = await response.json();
+    const tasks = await response.json();
+    if (!Array.isArray(tasks)) throw new Error('The task response was not a list.');
+    allTasks = tasks.filter(task => task && typeof task === 'object');
+    hasLoadedTasks = true;
+    populateAssigneeFilter();
     applyFilters();
     boardStatus.textContent = '';
     renderBoard();
     updateSummaryCards();
   } catch (error) {
     boardStatus.textContent = `Unable to load tasks: ${error.message}`;
+    retryLoadBtn.hidden = false;
+    if (!hasLoadedTasks) {
+      ['#total-count', '#completed-count', '#in-progress-count', '#to-do-count']
+        .forEach(selector => { document.querySelector(selector).textContent = '—'; });
+    }
     console.error('Error loading tasks:', error);
+  } finally {
+    refreshTasksBtn.disabled = false;
   }
 }
 
 // Apply active filters
 function applyFilters() {
   filteredTasks = allTasks.filter(task => {
-    const matchesPriority = !activeFilters.priority || task.priority === activeFilters.priority;
+    const matchesPriority = !activeFilters.priority || String(task.priority || '').toUpperCase() === activeFilters.priority;
     const matchesStatus = !activeFilters.status || normalizeStatus(task.status) === activeFilters.status;
-    const matchesSearch = !activeFilters.search || 
-      task.title.toLowerCase().includes(activeFilters.search.toLowerCase()) ||
-      (task.description && task.description.toLowerCase().includes(activeFilters.search.toLowerCase()));
-    return matchesPriority && matchesStatus && matchesSearch;
+    const matchesAssignee = !activeFilters.assignee || String(task.assignee || '') === activeFilters.assignee;
+    const searchTerm = activeFilters.search.toLowerCase();
+    const matchesSearch = !searchTerm || [task.title, task.description, task.assignee]
+      .some(value => String(value || '').toLowerCase().includes(searchTerm));
+    return matchesPriority && matchesStatus && matchesAssignee && matchesSearch;
   });
 }
 
 // Normalize status values (backend might use different format)
 function normalizeStatus(status) {
-  if (!status) return 'TODO';
-  const upper = status.toUpperCase().replace(' ', '_');
+  if (typeof status !== 'string' || !status.trim()) return 'TODO';
+  const upper = status.trim().toUpperCase().replace(/[\s-]+/g, '_');
   const mapping = {
     'TODO': 'TODO',
     'TO_DO': 'TODO',
@@ -163,7 +205,7 @@ function renderBoard() {
     const statusTasks = filteredTasks.filter(t => normalizeStatus(t.status) === status);
     
     countEl.textContent = statusTasks.length;
-    taskList.innerHTML = '';
+    taskList.replaceChildren();
     
     statusTasks.forEach(task => {
       const taskCard = createTaskCard(task);
@@ -172,7 +214,11 @@ function renderBoard() {
   });
 
   // Show/hide empty state
-  if (filteredTasks.length === 0 && allTasks.length > 0) {
+  if (filteredTasks.length === 0) {
+    const message = allTasks.length === 0
+      ? 'No tasks yet. Your task board is ready when work arrives.'
+      : 'No tasks match these filters. Try changing your search or filters.';
+    emptyState.querySelector('.empty-message').textContent = message;
     emptyState.classList.remove('hidden');
   } else {
     emptyState.classList.add('hidden');
@@ -181,41 +227,61 @@ function renderBoard() {
 
 // Create a task card element
 function createTaskCard(task) {
-  const card = document.createElement('div');
-  card.className = `task-card priority-${task.priority || 'LOW'}`;
-  
-  const priority = task.priority || 'LOW';
-  const effort = task.effort || '—';
-  const commentCount = task.comments || 0;
-  
-  let assigneesHtml = '';
-  if (task.assignee) {
-    const initials = getInitials(task.assignee);
-    assigneesHtml = `<div class="assignee-avatar" title="${task.assignee}">${initials}</div>`;
+  const card = document.createElement('article');
+  const priority = ['HIGH', 'MEDIUM', 'LOW'].includes(String(task.priority || '').toUpperCase())
+    ? String(task.priority || '').toUpperCase()
+    : 'LOW';
+  card.className = `task-card priority-${priority}`;
+
+  const header = document.createElement('div');
+  header.className = 'task-header';
+  const title = document.createElement('h4');
+  title.className = 'task-title';
+  title.textContent = typeof task.title === 'string' && task.title.trim() ? task.title : 'Untitled task';
+  const priorityLabel = document.createElement('span');
+  priorityLabel.className = `task-priority ${priority}`;
+  priorityLabel.textContent = priority;
+  header.append(title, priorityLabel);
+  card.appendChild(header);
+
+  if (typeof task.description === 'string' && task.description.trim()) {
+    const description = document.createElement('p');
+    description.className = 'task-description';
+    description.textContent = task.description;
+    card.appendChild(description);
   }
 
-  card.innerHTML = `
-    <div class="task-header">
-      <h4 class="task-title">${escapeHtml(task.title)}</h4>
-      <span class="task-priority ${priority}">${priority}</span>
-    </div>
-    ${task.description ? `<p class="task-description">${escapeHtml(task.description)}</p>` : ''}
-    <div class="task-meta">
-      <span class="task-effort">⏱️ ${effort}h</span>
-      <span class="task-comments">💬 ${commentCount}</span>
-    </div>
-    ${assigneesHtml ? `<div class="task-assignees">${assigneesHtml}</div>` : ''}
-  `;
-  
+  const meta = document.createElement('div');
+  meta.className = 'task-meta';
+  const effort = document.createElement('span');
+  effort.className = 'task-effort';
+  effort.textContent = Number.isFinite(task.effort) ? `${task.effort}h` : 'Effort —';
+  const comments = document.createElement('span');
+  comments.className = 'task-comments';
+  comments.textContent = `Comments ${Number.isFinite(task.comments) ? task.comments : 0}`;
+  meta.append(effort, comments);
+  card.appendChild(meta);
+
+  if (typeof task.assignee === 'string' && task.assignee.trim()) {
+    const assignee = document.createElement('div');
+    assignee.className = 'task-assignees';
+    assignee.textContent = task.assignee;
+    assignee.title = task.assignee;
+    card.appendChild(assignee);
+  }
+
   return card;
 }
 
-// Escape HTML to prevent XSS
-function escapeHtml(text) {
-  if (!text) return '';
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
+function populateAssigneeFilter() {
+  const selectedAssignee = assigneeFilter.value;
+  const assignees = [...new Set(allTasks
+    .map(task => typeof task.assignee === 'string' ? task.assignee.trim() : '')
+    .filter(Boolean))].sort((first, second) => first.localeCompare(second));
+  assigneeFilter.replaceChildren(new Option('Assignee: All', ''));
+  assignees.forEach(assignee => assigneeFilter.add(new Option(assignee, assignee)));
+  assigneeFilter.value = assignees.includes(selectedAssignee) ? selectedAssignee : '';
+  activeFilters.assignee = assigneeFilter.value;
 }
 
 // Update summary cards
@@ -247,6 +313,12 @@ function attachEventListeners() {
     renderBoard();
   });
 
+  assigneeFilter.addEventListener('change', (e) => {
+    activeFilters.assignee = e.target.value;
+    applyFilters();
+    renderBoard();
+  });
+
   // Task search
   taskSearch.addEventListener('input', (e) => {
     activeFilters.search = e.target.value;
@@ -270,10 +342,13 @@ function attachEventListeners() {
     alert('Create Task feature coming soon!');
   });
 
+  refreshTasksBtn.addEventListener('click', loadTasks);
+  retryLoadBtn.addEventListener('click', loadTasks);
+
   // Add task buttons (per column)
   document.querySelectorAll('.add-task-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const status = e.target.dataset.status;
+      const status = e.currentTarget.dataset.status;
       alert(`Add task to ${status} coming soon!`);
     });
   });

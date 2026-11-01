@@ -7,8 +7,7 @@ test("UVJ Branding - Title and Logo", async ({ page }) => {
   await expect(page).toHaveTitle("UVJTaskFlow | Dashboard");
   
   // Verify logo is present
-  const logo = page.locator('img[alt="UVJ Technologies Logo"]');
-  await expect(logo).toBeVisible();
+  await expect(page.getByRole("img", { name: "UVJ Technologies" })).toBeVisible();
   
   // Verify main heading
   await expect(page.getByRole("heading", { name: "UVJTaskFlow" })).toBeVisible();
@@ -18,16 +17,17 @@ test("UVJ Branding - Title and Logo", async ({ page }) => {
 });
 
 test("User Profile - Dynamic Name Display", async ({ page }) => {
+  await page.route("**/api/users/current", route => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({ name: "Ada Lovelace", role: "Lead Engineer", imageUrl: null })
+  }));
   await page.goto("/");
   
-  // Wait for user profile to load (should show "Demo User" from API)
-  // Use locator to handle the specific element
-  const userName = page.locator("#user-name");
-  await expect(userName).toContainText("Demo User", { timeout: 5000 });
+  await expect(page.locator("#user-name")).toHaveText("Ada Lovelace");
+  await expect(page.locator("#welcome-name")).toHaveText("Ada Lovelace!");
   
-  // Verify role is displayed
-  const userRole = page.locator("#user-role");
-  await expect(userRole).toContainText("Project Member");
+  await expect(page.locator("#user-role")).toHaveText("Lead Engineer");
 });
 
 test("Dashboard Summary Cards", async ({ page }) => {
@@ -40,6 +40,29 @@ test("Dashboard Summary Cards", async ({ page }) => {
   
   // Verify card labels are present
   await expect(page.locator(".summary-label").first()).toContainText(/Total Tasks|Completed|In Progress|To Do/);
+});
+
+test("Summary counts and Kanban placement reflect API task data", async ({ page }) => {
+  await page.route("**/api/tasks", route => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify([
+      { id: 101, title: "Fixture To Do", status: "OPEN", priority: "LOW" },
+      { id: 102, title: "Fixture In Progress", status: "IN_PROGRESS", priority: "MEDIUM" },
+      { id: 103, title: "Fixture Completed", status: "COMPLETED", priority: "HIGH" },
+      { id: 104, title: "Fixture On Hold", status: "ON_HOLD", priority: "LOW" }
+    ])
+  }));
+  await page.goto("/");
+
+  await expect(page.locator("#total-count")).toHaveText("4");
+  await expect(page.locator("#completed-count")).toHaveText("1");
+  await expect(page.locator("#in-progress-count")).toHaveText("1");
+  await expect(page.locator("#to-do-count")).toHaveText("1");
+  await expect(page.locator("#tasks-TODO .task-title")).toHaveText(["Fixture To Do"]);
+  await expect(page.locator("#tasks-IN_PROGRESS .task-title")).toHaveText(["Fixture In Progress"]);
+  await expect(page.locator("#tasks-COMPLETED .task-title")).toHaveText(["Fixture Completed"]);
+  await expect(page.locator("#tasks-ON_HOLD .task-title")).toHaveText(["Fixture On Hold"]);
 });
 
 test("Kanban Board - Four Columns", async ({ page }) => {
