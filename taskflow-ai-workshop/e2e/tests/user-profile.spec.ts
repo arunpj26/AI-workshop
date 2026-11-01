@@ -1,50 +1,90 @@
 import { test, expect } from "@playwright/test";
 
-/**
- * Verify dynamic user profile updates and fallback scenarios
- * Maps to AC3, AC4, AC6, AC7: User profile handling, dynamic updates, fallbacks
- */
+const defaultProfile = {
+  name: "Taylor Morgan",
+  role: "Project Member",
+  imageUrl: null
+};
+
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/users/current", (route) => route.fulfill({
+    contentType: "application/json",
+    json: defaultProfile
+  }));
+});
 
 test("User Profile - Display Update on Page Reload", async ({ page }) => {
+  let requestCount = 0;
+  await page.route("**/api/users/current", (route) => {
+    requestCount += 1;
+    return route.fulfill({
+      contentType: "application/json",
+      json: requestCount === 1
+        ? defaultProfile
+        : { name: "Jordan Lee", role: "Analyst", imageUrl: null }
+    });
+  });
   await page.goto("/");
   
-  // Verify initial user name loads
   const userName = page.locator("#user-name");
-  await expect(userName).toContainText("Demo User", { timeout: 5000 });
-  
-  // Reload page
+  await expect(userName).toHaveText("Taylor Morgan");
   await page.reload();
-  
-  // Verify user name is still loaded after reload
-  await expect(userName).toContainText("Demo User", { timeout: 5000 });
+  await expect(userName).toHaveText("Jordan Lee");
+  await expect(page.locator("#welcome-name")).toHaveText("Jordan Lee");
 });
 
 test("User Profile - Initials Display When No Image", async ({ page }) => {
   await page.goto("/");
   
-  // Wait for profile to load
   const userInitials = page.locator("#user-initials");
-  await page.waitForFunction(() => {
-    const elem = document.querySelector("#user-initials");
-    return elem && elem.textContent!.trim().length > 0;
-  }, { timeout: 5000 });
-  
-  // Verify initials are displayed (should be "DU" for "Demo User")
-  const initialsText = await userInitials.textContent();
-  expect(initialsText).toMatch(/[A-Z]+/);
+  await expect(userInitials).toHaveText("TM");
+  await expect(userInitials).toBeVisible();
+  await expect(page.locator("#user-image")).toBeHidden();
+});
+
+test("User Profile - Configured Image Is Displayed", async ({ page }) => {
+  await page.route("**/api/users/current", (route) => route.fulfill({
+    contentType: "application/json",
+    json: { ...defaultProfile, imageUrl: "https://profile.test/avatar.png" }
+  }));
+  await page.route("https://profile.test/avatar.png", (route) => route.fulfill({
+    status: 200,
+    contentType: "image/png",
+    body: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l2cAAAAASUVORK5CYII=", "base64")
+  }));
+  await page.goto("/");
+
+  await expect(page.locator("#user-image")).toBeVisible();
+  await expect(page.locator("#user-initials")).toBeHidden();
+});
+
+test("User Profile - Broken Image Falls Back To Initials", async ({ page }) => {
+  await page.route("**/api/users/current", (route) => route.fulfill({
+    contentType: "application/json",
+    json: { ...defaultProfile, imageUrl: "https://profile.test/broken-avatar.png" }
+  }));
+  await page.route("https://profile.test/broken-avatar.png", (route) => route.fulfill({ status: 404, body: "" }));
+  await page.goto("/");
+
+  await expect(page.locator("#user-initials")).toHaveText("TM");
+  await expect(page.locator("#user-initials")).toBeVisible();
+  await expect(page.locator("#user-image")).toBeHidden();
 });
 
 test("User Profile - Missing Name Fallback", async ({ page }) => {
+  await page.route("**/api/users/current", (route) => route.fulfill({
+    contentType: "application/json",
+    json: { name: null, role: "undefined", imageUrl: null }
+  }));
   await page.goto("/");
-  
-  // Verify there's a user name element (even if fallback)
+
   const userName = page.locator("#user-name");
-  const nameText = await userName.textContent();
-  
-  // Should not be null or "undefined"
-  expect(nameText).not.toBe("undefined");
-  expect(nameText).not.toBe("null");
-  expect(nameText).toBeTruthy();
+  await expect(userName).toBeHidden();
+  await expect(page.locator("#welcome-greeting")).toHaveText("Welcome to UVJTaskFlow");
+  await expect(page.locator("#welcome-name")).toBeHidden();
+  await expect(page.locator("#user-role")).toBeHidden();
+  await expect(page.locator("#user-initials")).toHaveText("U");
+  await expect(page.locator("body")).not.toContainText(/null|undefined|Demo User/i);
 });
 
 test("User Profile - Role Display", async ({ page }) => {
@@ -70,13 +110,8 @@ test("User Profile - Avatar Element Exists", async ({ page }) => {
 test("User Profile - Welcome Section Uses Dynamic Name", async ({ page }) => {
   await page.goto("/");
   
-  // Verify welcome name is dynamically set
   const welcomeName = page.locator("#welcome-name");
-  const nameText = await welcomeName.textContent();
-  
-  // Should contain the user's name, not a hardcoded placeholder
-  expect(nameText).not.toBe("");
-  expect(nameText).toBeTruthy();
+  await expect(welcomeName).toHaveText("Taylor Morgan");
 });
 
 test("User Profile - Greeting Section Visible", async ({ page }) => {
@@ -105,6 +140,19 @@ test("User Profile - No Null Values in DOM", async ({ page }) => {
   expect(hasUndefined).toBe(false);
 });
 
+test("User Profile - API Failure Shows Generic Profile And Error", async ({ page }) => {
+  await page.route("**/api/users/current", (route) => route.fulfill({
+    status: 503,
+    contentType: "application/json",
+    json: { error: "Unavailable" }
+  }));
+  await page.goto("/");
+
+  await expect(page.locator("#welcome-greeting")).toHaveText("Welcome to UVJTaskFlow");
+  await expect(page.locator("#profile-status")).toContainText("Unable to load configured profile");
+  await expect(page.locator("#user-initials")).toHaveText("U");
+});
+
 test("User Profile - Subtitle/Tagline Visible", async ({ page }) => {
   await page.goto("/");
   
@@ -118,17 +166,15 @@ test("User Profile - Subtitle/Tagline Visible", async ({ page }) => {
 test("User Profile - Header and Sidebar User Info Consistency", async ({ page }) => {
   await page.goto("/");
   
-  // Wait for both elements to load
   const headerUserName = page.locator("#user-name");
   const headerUserRole = page.locator("#user-role");
   
-  await expect(headerUserName).toContainText("Demo User", { timeout: 5000 });
-  await expect(headerUserRole).toContainText("Project Member", { timeout: 5000 });
+  await expect(headerUserName).toHaveText("Taylor Morgan");
+  await expect(headerUserRole).toHaveText("Project Member");
   
-  // Both header elements should show consistent data
   const nameText = await headerUserName.textContent();
   const roleText = await headerUserRole.textContent();
   
-  expect(nameText).toEqual("Demo User");
+  expect(nameText).toEqual("Taylor Morgan");
   expect(roleText).toEqual("Project Member");
 });

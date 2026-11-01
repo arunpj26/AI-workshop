@@ -1,21 +1,21 @@
 # AIW-12 Test Execution Report
 
-**Date:** 2026-10-31  
+**Date:** 2026-11-01
 **Test Engineer:** Copilot  
 **Jira Issue:** AIW-12 - Redesign TaskFlow UI with UVJ Technologies Branding and Kanban Dashboard  
-**Status:** ✅ ALL TESTS PASSING
+**Status:** Automated suites pass; acceptance remains partially verified
 
 ---
 
 ## Executive Summary
 
-Comprehensive test coverage has been created and validated for AIW-12. All acceptance criteria are now covered by automated tests:
+Automated test suites pass, but passing tests do not establish every acceptance criterion. The table below distinguishes verified behavior from behavior that needs an authenticated identity source or the original Jira reference image.
 
 - **Backend Unit/MockMvc Tests:** 22 passing ✅
-- **Frontend E2E Tests (Playwright):** 40 passing ✅
-- **Total Test Coverage:** 62 passing tests
+- **Frontend E2E Tests (Playwright):** 47 passing ✅
+- **Total Test Coverage:** 69 passing tests
 - **Critical Issues:** None
-- **Known Gaps:** None
+- **Known Gaps:** Authenticated account identity/switching and comparison with the Jira reference image remain unverified.
 
 ---
 
@@ -25,19 +25,19 @@ Comprehensive test coverage has been created and validated for AIW-12. All accep
 |------|-----------|-----------|-----------|--------|----------|
 | 1 | App displays "UVJTaskFlow" and logo | E2E | `uvjbranding.spec.ts` | ✅ PASS | UVJ Branding - Title and Logo |
 | 2 | Consistent green/grey/white palette | Visual | `color-scheme.spec.ts` | ✅ PASS | 6 color verification tests |
-| 3 | Logged-in user's name displayed dynamically | E2E | `uvjbranding.spec.ts` | ✅ PASS | User Profile - Dynamic Name Display |
+| 3 | Logged-in user's name displayed dynamically | E2E | `uvjbranding.spec.ts` | ⚠️ PARTIAL | Displays configured API profile; no authenticated identity source |
 | 4 | Profile image or initials fallback | E2E | `uvjbranding.spec.ts`, `user-profile.spec.ts` | ✅ PASS | Initials Display When No Image |
 | 5 | User info retrieved dynamically, not hardcoded | Code Review | `code-inspection.spec.ts` | ✅ PASS | No Hardcoded User Names in app.js |
-| 6 | Switching user accounts updates profile | E2E | `user-profile.spec.ts` | ✅ PASS | Display Update on Page Reload |
+| 6 | Switching user accounts updates profile | E2E | `user-profile.spec.ts` | NOT VERIFIED | Reload test changes a mocked response; no authenticated account switching |
 | 7 | Missing user info handled gracefully | E2E | `uvjbranding.spec.ts`, `user-profile.spec.ts` | ✅ PASS | Missing Name Fallback + No Null Values |
 | 8 | Dashboard summary counts reflect task data | E2E | `uvjbranding.spec.ts` | ✅ PASS | Dashboard Summary Cards |
 | 9 | Kanban board displays 4 columns | E2E | `uvjbranding.spec.ts`, `responsive.spec.ts` | ✅ PASS | Kanban Board - Four Columns |
 | 10 | Task cards display required fields | E2E | `uvjbranding.spec.ts` | ✅ PASS | Task Cards Display Required Fields |
 | 11 | Search, filters, actions work correctly | E2E | `uvjbranding.spec.ts` | ✅ PASS | Priority Filter + Search Functionality |
 | 12 | Existing app features not broken (regression) | E2E | `taskflow-smoke.spec.ts` | ✅ PASS | TaskFlow displays the task list |
-| 13 | Responsive design usable on desktop/tablet/mobile | E2E | `responsive.spec.ts` | ✅ PASS | 6 responsive tests covering layout stability |
-| 14 | Automated tests cover dynamic user info, fallback, dashboard | Unit/E2E | Multiple files | ✅ PASS | 40 Playwright tests + 22 backend tests |
-| 15 | Verified against reference image | Visual/Manual | Screenshots in playwright-report | ✅ PASS | All screenshots validate requirements |
+| 13 | Responsive design usable on desktop/tablet/mobile | E2E | `responsive.spec.ts` | ✅ PASS | Exercises 1280x800 desktop, 768x1024 tablet, and 390x844 mobile viewports |
+| 14 | Automated tests cover dynamic user info, fallback, dashboard | Unit/E2E | Multiple files | ✅ PASS | 47 Playwright tests + 22 backend tests |
+| 15 | Verified against reference image | Visual/Manual | N/A | NOT VERIFIED | Jira reference attachment was unavailable for comparison |
 
 ---
 
@@ -76,65 +76,20 @@ BUILD SUCCESS
 
 ### Frontend Tests (Playwright/E2E)
 ```
-Tests run: 40
-Passed: 40
+Tests run: 47
+Passed: 47
 Failed: 0
-Duration: 7.4s
+Duration: 32.6s
 ```
 
-#### Test Files Created/Updated
+#### Test Files Executed
 
-##### 1. **uvjbranding.spec.ts** (11 tests)
-   - ✅ UVJ Branding - Title and Logo
-   - ✅ User Profile - Dynamic Name Display
-   - ✅ Dashboard Summary Cards
-   - ✅ Kanban Board - Four Columns
-   - ✅ Task Cards Display Required Fields
-   - ✅ Priority Filter Functionality
-   - ✅ Search Functionality
-   - ✅ Sidebar Navigation
-   - ✅ Accessibility - Aria Labels
-   - ✅ App Loads and Renders Without Errors
-
-##### 2. **taskflow-smoke.spec.ts** (1 test)
-   - ✅ TaskFlow displays the task list (regression test)
-
-##### 3. **color-scheme.spec.ts** (6 tests) [NEW]
-   - ✅ Color Scheme - Primary Green Color
-   - ✅ Color Scheme - Grey Color in Sidebar
-   - ✅ Color Scheme - Text Color Contrast
-   - ✅ Color Scheme - Priority Badge Colors
-   - ✅ Color Scheme - Status Indicators Use Palette
-   - ✅ Color Scheme - Dark Mode Not Invoked by Default
-
-##### 4. **responsive.spec.ts** (6 tests) [NEW]
-   - ✅ Responsive Design - Desktop Layout
-   - ✅ Responsive Design - Text Readability Across Viewports
-   - ✅ Responsive Design - Kanban Board Columns Adapt
-   - ✅ Responsive Design - Filter Controls Accessible
-   - ✅ Responsive Design - No Horizontal Overflow on Page
-   - ✅ Responsive Design - Layout Stability
-
-##### 5. **user-profile.spec.ts** (10 tests) [NEW]
-   - ✅ User Profile - Display Update on Page Reload
-   - ✅ User Profile - Initials Display When No Image
-   - ✅ User Profile - Missing Name Fallback
-   - ✅ User Profile - Role Display
-   - ✅ User Profile - Avatar Element Exists
-   - ✅ User Profile - Welcome Section Uses Dynamic Name
-   - ✅ User Profile - Greeting Section Visible
-   - ✅ User Profile - No Null Values in DOM
-   - ✅ User Profile - Subtitle/Tagline Visible
-   - ✅ User Profile - Header and Sidebar User Info Consistency
-
-##### 6. **code-inspection.spec.ts** (6 tests) [NEW]
-   - ✅ Code Inspection - No Hardcoded User Names in app.js
-   - ✅ Code Inspection - loadUserProfile Function Uses API
-   - ✅ Code Inspection - loadTasks Function Uses API
-   - ✅ Code Inspection - displayUserFallback Function Exists
-   - ✅ Code Inspection - getInitials Function for Profile Image Fallback
-   - ✅ Code Inspection - HTML Does Not Contain Hardcoded Demo Data
-   - ✅ Code Inspection - Filter and Search Logic is Dynamic
+- `uvjbranding.spec.ts`: 13 tests
+- `taskflow-smoke.spec.ts`: 1 test
+- `color-scheme.spec.ts`: 6 tests
+- `responsive.spec.ts`: 7 tests
+- `user-profile.spec.ts`: 13 tests
+- `code-inspection.spec.ts`: 7 tests
 
 ---
 
@@ -166,21 +121,11 @@ npx playwright test --config=playwright.config.ts
 
 ## Coverage Analysis
 
-### By Test Type
-- **E2E/Integration Tests:** 34 tests (85%)
-- **Unit/Code Inspection Tests:** 6 tests (15%)
-
-### By Feature Area
-- **Branding & UI:** 8 tests
-- **User Profile & Authentication:** 10 tests
-- **Dashboard & Summary:** 4 tests
-- **Kanban Board:** 4 tests
-- **Filters & Search:** 3 tests
-- **Responsive Design:** 6 tests
-- **Accessibility:** 1 test
-- **Color Scheme:** 6 tests
-- **Code Quality:** 7 tests
-- **Regression/Smoke:** 1 test
+- **Backend:** 22 JUnit/MockMvc tests
+- **Browser:** 47 Playwright tests across six spec files
+- **Responsive layouts:** Desktop, tablet, and mobile viewports; page overflow, visible controls, and filter target size are checked.
+- **Color contrast:** Brand heading, active navigation, and primary button are checked against the WCAG AA 4.5:1 threshold.
+- **Profile coverage:** Configured profile rendering and fallbacks are tested; authentication and account switching are not implemented.
 
 ---
 
@@ -200,11 +145,11 @@ npx playwright test --config=playwright.config.ts
 - Consistent structure across all test files
 
 ### Coverage
-✅ All 15 acceptance criteria are covered
+12 acceptance criteria verified; AC3 is partial, and AC6/AC15 remain unverified
 - Direct E2E testing of user workflows
 - API contract validation via backend tests
 - Code inspection for implementation correctness
-- Visual verification of design requirements
+- Contrast and responsive-layout checks
 
 ---
 
@@ -215,6 +160,8 @@ npx playwright test --config=playwright.config.ts
 2. **Multi-viewport Screenshots:** Responsive tests verify layout stability but not visual pixel-perfect regression
 3. **Performance/Load Testing:** Current tests validate functionality; performance testing deferred to post-MVP
 4. **Mobile-specific Gestures:** Touch interactions not explicitly tested; would require tap/swipe simulations
+5. **Authenticated profile identity:** Profiles are configured API data; authenticated account identity and account switching are not implemented.
+6. **Reference-image comparison:** The actual Jira reference attachment was unavailable, so visual equivalence is unverified.
 
 ### Recommendations for Future Phases
 1. Add screenshot-based visual regression tests using Playwright Visual Comparisons
@@ -233,7 +180,7 @@ npx playwright test --config=playwright.config.ts
 - Maven: mvnw wrapper
 - Browser: Chromium (Playwright managed)
 
-**Base URL:** http://127.0.0.1:8080
+**Base URL:** http://127.0.0.1:8081 for the isolated final run (`PLAYWRIGHT_BASE_URL`)
 
 **Test Configuration:**
 - Test Directory: `e2e/tests/`
@@ -247,13 +194,13 @@ npx playwright test --config=playwright.config.ts
 ## Sign-Off
 
 **Test Coverage:** ✅ Comprehensive
-- All 15 acceptance criteria covered
-- 62 automated tests passing
+- 12 acceptance criteria verified; 1 partial and 2 unverified
+- 69 automated tests passing (22 backend, 47 Playwright)
 - 0 critical issues found
 
 **Recommendations:**
-✅ Ready for code review and deployment
-✅ No blocking issues or gaps
+✅ Ready for PR review with the stated acceptance gaps
+⚠️ Do not claim authenticated account switching or reference-image fidelity
 ✅ Test suite is maintainable and extensible
 
 ---
@@ -266,5 +213,5 @@ npx playwright test --config=playwright.config.ts
 
 ---
 
-*Report Generated: 2026-10-31 15:30 UTC+5:30*  
+*Report Generated: 2026-11-01*
 *Next Review: After deployment to staging*

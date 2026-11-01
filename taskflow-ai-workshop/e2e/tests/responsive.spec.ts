@@ -1,4 +1,4 @@
-import { test, expect, devices } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 /**
  * Verify responsive design works on different viewports
@@ -28,7 +28,7 @@ test("Responsive Design - Text Readability Across Viewports", async ({ page }) =
   await page.goto("/");
   
   // Verify heading is readable on default viewport
-  const heading = page.getByRole("heading", { name: "UVJTaskFlow" });
+  const heading = page.getByRole("heading", { name: "UVJTaskFlow", exact: true });
   const fontSize = await heading.evaluate(() => {
     return window.getComputedStyle(document.querySelector('h1')!).fontSize;
   });
@@ -106,4 +106,35 @@ test("Responsive Design - Layout Stability", async ({ page }) => {
   
   expect(sidebarWidth).toBeGreaterThan(200);
   expect(sidebarWidth).toBeLessThan(400);
+});
+
+test("Responsive layout is usable on desktop, tablet, and mobile", async ({ page }) => {
+  const viewports = [
+    { name: "desktop", width: 1280, height: 800 },
+    { name: "tablet", width: 768, height: 1024 },
+    { name: "mobile", width: 390, height: 844 }
+  ];
+
+  for (const viewport of viewports) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto("/");
+
+    await expect(page.locator(".sidebar")).toBeVisible();
+    await expect(page.locator(".main-content")).toBeVisible();
+    await expect(page.locator("#priority-filter")).toBeVisible();
+    await expect(page.locator(".kanban-column").first()).toBeVisible();
+
+    const layout = await page.evaluate(() => ({
+      viewportWidth: window.innerWidth,
+      documentWidth: document.documentElement.scrollWidth,
+      sidebarWidth: document.querySelector(".sidebar")!.getBoundingClientRect().width,
+      firstColumnRight: document.querySelector(".kanban-column")!.getBoundingClientRect().right,
+      filterHeight: document.querySelector("#priority-filter")!.getBoundingClientRect().height
+    }));
+
+    expect(layout.documentWidth, `${viewport.name} page should not overflow horizontally`).toBeLessThanOrEqual(layout.viewportWidth);
+    expect(layout.sidebarWidth).toBeGreaterThan(0);
+    expect(layout.firstColumnRight).toBeLessThanOrEqual(layout.viewportWidth);
+    expect(layout.filterHeight).toBeGreaterThanOrEqual(32);
+  }
 });

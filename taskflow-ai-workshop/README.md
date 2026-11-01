@@ -29,6 +29,15 @@ mvn spring-boot:run
 ```
 Open `http://localhost:8080`.
 
+## User profile
+
+The dashboard reads the current profile from `GET /api/users/current`. Configure
+`TASKFLOW_USER_NAME`, `TASKFLOW_USER_ROLE`, and `TASKFLOW_USER_IMAGE_URL` in the
+application environment when a profile is available. If these values are absent,
+the dashboard uses a generic greeting and initials rather than sample personal
+details. This starter has no authentication system; connect the endpoint to the
+trusted current-user source when integrating it with an authenticated application.
+
 ## Run Playwright
 ```bash
 npm install

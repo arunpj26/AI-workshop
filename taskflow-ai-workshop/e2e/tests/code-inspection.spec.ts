@@ -48,13 +48,13 @@ test("Code Inspection - loadTasks Function Uses API", async () => {
   expect(appJsContent).toContain("fetch('/api/tasks')");
 });
 
-test("Code Inspection - displayUserFallback Function Exists", async () => {
+test("Code Inspection - Profile Fallback Does Not Use Sample Personal Data", async () => {
   const appJsPath = path.join(__dirname, "../../src/main/resources/static/app.js");
   const appJsContent = fs.readFileSync(appJsPath, "utf-8");
   
-  // Verify fallback handling exists
-  expect(appJsContent).toContain("displayUserFallback");
-  expect(appJsContent).toContain("catch");
+  expect(appJsContent).toContain("Welcome to UVJTaskFlow");
+  expect(appJsContent).not.toContain("Demo User");
+  expect(appJsContent).not.toContain("Taskflow User");
 });
 
 test("Code Inspection - getInitials Function for Profile Image Fallback", async () => {
